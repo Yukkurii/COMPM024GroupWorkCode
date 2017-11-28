@@ -1,7 +1,7 @@
 # UCL MSR Data Processor
 
 Mining Software Repositories (MSR) consortium, mining challenge data processing
-application (...and breath)
+application (...and breathe).
 
 ## How To Run
 
