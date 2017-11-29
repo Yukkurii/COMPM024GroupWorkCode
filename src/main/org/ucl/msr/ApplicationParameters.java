@@ -23,13 +23,22 @@ import org.apache.commons.cli.*;
 public class ApplicationParameters
 {
     private String path;
-    private String query;
+    private long threadMax;
+    private long eventMax;
 
     public ApplicationParameters(String[] arguments)
     {
-        CommandLine commandLine = getCommandLine(arguments);
-        path = commandLine.getOptionValue("data");
-        query = commandLine.getOptionValue("query");
+        try
+        {
+            CommandLine commandLine = getCommandLine(arguments);
+            path = commandLine.getOptionValue("data");
+            threadMax = (Long)commandLine.getParsedOptionValue("thread-max");
+            eventMax = (Long)commandLine.getParsedOptionValue("event-max");
+        }
+        catch (ParseException exception)
+        {
+            throw new IllegalArgumentException(exception);
+        }
     }
 
     public String getDataPath()
@@ -37,9 +46,14 @@ public class ApplicationParameters
         return path;
     }
 
-    public String getQuery()
+    public int getThreadMax()
     {
-        return query;
+        return (int)threadMax;
+    }
+
+    public long getEventMax()
+    {
+        return eventMax;
     }
 
     private CommandLine getCommandLine(String[] arguments)
@@ -58,11 +72,22 @@ public class ApplicationParameters
 
     private Options getOptions()
     {
-        Option input = new Option("d", "data", true, "the path of the data zip");
-        input.setRequired(true);
+        Option dataOption = new Option("d", "data", true, "the path of the data zip");
+        dataOption.setRequired(true);
+        dataOption.setType(String.class);
+
+        Option threadMaxOption = new Option("t", "thread-max", true, "the maximum number of threads to use");
+        threadMaxOption.setRequired(false);
+        threadMaxOption.setType(Number.class);
+
+        Option eventMaxOption = new Option("e", "event-max", true, "the maximum number of events to process");
+        eventMaxOption.setRequired(false);
+        eventMaxOption.setType(Number.class);
 
         Options options = new Options();
-        options.addOption(input);
+        options.addOption(dataOption);
+        options.addOption(eventMaxOption);
+        options.addOption(threadMaxOption);
 
         return options;
     }

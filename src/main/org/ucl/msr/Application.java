@@ -9,12 +9,10 @@
 
 package org.ucl.msr;
 
-import org.ucl.msr.event.EventIterator;
-import org.ucl.msr.event.TestPatternProcessor;
+import org.ucl.msr.event.*;
 import org.ucl.msr.zip.ZipArchive;
 import org.ucl.msr.zip.ZipFile;
 
-import java.nio.file.Paths;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadPoolExecutor;
 
@@ -32,10 +30,11 @@ public class Application
     {
         try
         {
-            TestPatternProcessor processor = new TestPatternProcessor();
             ApplicationParameters parameters = new ApplicationParameters(arguments);
+            EventProcessor processor = new LimitedRunProcessor(new TestPatternProcessor(), parameters.getEventMax());
             ZipArchive archive = new ZipFile(parameters.getDataPath());
-            ThreadPoolExecutor executor = (ThreadPoolExecutor) Executors.newFixedThreadPool(4);
+
+            ThreadPoolExecutor executor = (ThreadPoolExecutor) Executors.newFixedThreadPool(parameters.getThreadMax());
             EventIterator iterator = new EventIterator(archive, processor, executor);
             executor.submit(iterator);
         }

@@ -75,10 +75,13 @@ public class TestPatternProcessor implements EventProcessor
     private boolean isTestFile(EditEvent editEvent)
     {
         String fileName = editEvent.ActiveWindow.getCaption();
-        boolean result = fileName.endsWith("Test.cs");
+        boolean result = fileName.endsWith("Test.cs") || fileName.endsWith("Tests.cs");
+
+        /*
         if (!result && fileName.contains("Test")){
             System.out.println("Unrecorded test file: " + fileName);
         }
+        */
         return result;
     }
 

@@ -16,7 +16,9 @@ import org.ucl.msr.zip.ZipElement;
 import org.ucl.msr.zip.ZipStream;
 
 import java.nio.charset.StandardCharsets;
+import java.util.concurrent.CancellationException;
 import java.util.concurrent.ExecutorService;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Instances of the class iterate through a collection of MSR mining challenge
@@ -41,25 +43,40 @@ public class EventIterator implements Runnable
     @Override
     public void run()
     {
-        for (ZipElement element: archive)
+        try
         {
-            String elementName = element.getName();
+            processArchive(archive);
+        }
+        catch (CancellationException e)
+        {
+            executor.shutdownNow();
+        }
+    }
 
-            if (elementName.endsWith("json"))
-            {
-                processJson(element);
-            }
-            else if (elementName.endsWith("zip"))
-            {
-                processArchive(element);
-            }
+    private void processArchive(ZipArchive archive)
+    {
+        for (ZipElement element : archive)
+        {
+            processAchieveElement(element);
+        }
+    }
+
+    private void processAchieveElement(ZipElement element)
+    {
+        String elementName = element.getName();
+
+        if (elementName.endsWith("json"))
+        {
+            processJson(element);
+        }
+        else if (elementName.endsWith("zip"))
+        {
+            processArchive(element);
         }
     }
 
     private void processArchive(ZipElement element)
     {
-        //System.out.println(element.getName());
-
         ZipArchive archive = new ZipStream(element.getData());
         EventIterator iterator = new EventIterator(archive, processor, executor);
         executor.submit(iterator);
@@ -67,8 +84,6 @@ public class EventIterator implements Runnable
 
     private void processJson(ZipElement element)
     {
-        //System.out.println(element.getName());
-
         String content = new String(element.getData(), StandardCharsets.UTF_8);
         IDEEvent event = JsonUtils.fromJson(content, IDEEvent.class);
         processor.process(event);
