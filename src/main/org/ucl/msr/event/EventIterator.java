@@ -58,7 +58,7 @@ public class EventIterator implements Runnable
 
     private void processArchive(ZipElement element)
     {
-        System.out.println(element.getName());
+        //System.out.println(element.getName());
 
         ZipArchive archive = new ZipStream(element.getData());
         EventIterator iterator = new EventIterator(archive, processor, executor);
@@ -67,7 +67,7 @@ public class EventIterator implements Runnable
 
     private void processJson(ZipElement element)
     {
-        System.out.println(element.getName());
+        //System.out.println(element.getName());
 
         String content = new String(element.getData(), StandardCharsets.UTF_8);
         IDEEvent event = JsonUtils.fromJson(content, IDEEvent.class);
