@@ -13,8 +13,8 @@ import org.ucl.msr.event.*;
 import org.ucl.msr.zip.ZipArchive;
 import org.ucl.msr.zip.ZipFile;
 
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.ThreadPoolExecutor;
 
 /**
  * Instances of this class contain the entry point to the system. When called,
@@ -26,15 +26,17 @@ import java.util.concurrent.ThreadPoolExecutor;
  */
 public class Application
 {
+    private static final int DEFAULT_THREAD_MAX = 4;
+
     public static void main(String[] arguments)
     {
         try
         {
             ApplicationParameters parameters = new ApplicationParameters(arguments);
-            EventProcessor processor = new LimitedRunProcessor(new TestPatternProcessor(), parameters.getEventMax());
+            EventProcessor processor = getEventProcessor(parameters);
             ZipArchive archive = new ZipFile(parameters.getDataPath());
 
-            ThreadPoolExecutor executor = (ThreadPoolExecutor) Executors.newFixedThreadPool(parameters.getThreadMax());
+            ExecutorService executor = getExecutorService(parameters);
             EventIterator iterator = new EventIterator(archive, processor, executor);
             executor.submit(iterator);
         }
@@ -42,5 +44,21 @@ public class Application
         {
             System.out.println(exception.getMessage());
         }
+    }
+
+    private static EventProcessor getEventProcessor(ApplicationParameters parameters)
+    {
+        EventProcessor result = new TestPatternProcessor();
+        if (parameters.hasEventMax())
+        {
+            result = new LimitedRunProcessor(result, parameters.getEventMax());
+        }
+        return result;
+    }
+
+    private static ExecutorService getExecutorService(ApplicationParameters parameters)
+    {
+        int threadMax = parameters.hasThreadMax() ? parameters.getThreadMax() : DEFAULT_THREAD_MAX;
+        return Executors.newFixedThreadPool(threadMax);
     }
 }

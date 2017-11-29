@@ -22,38 +22,40 @@ import org.apache.commons.cli.*;
  */
 public class ApplicationParameters
 {
-    private String path;
-    private long threadMax;
-    private long eventMax;
+    private static final String DATA_OPTION_LONG = "data";
+    private static final String EVENT_MAX_OPTION_LONG = "event-max";
+    private static final String THREAD_MAX_OPTION_LONG = "thread-max";
+    
+    private CommandLine commandLine;
 
     public ApplicationParameters(String[] arguments)
     {
-        try
-        {
-            CommandLine commandLine = getCommandLine(arguments);
-            path = commandLine.getOptionValue("data");
-            threadMax = (Long)commandLine.getParsedOptionValue("thread-max");
-            eventMax = (Long)commandLine.getParsedOptionValue("event-max");
-        }
-        catch (ParseException exception)
-        {
-            throw new IllegalArgumentException(exception);
-        }
+        commandLine = getCommandLine(arguments);
     }
 
     public String getDataPath()
     {
-        return path;
-    }
-
-    public int getThreadMax()
-    {
-        return (int)threadMax;
+        return commandLine.getOptionValue(DATA_OPTION_LONG);
     }
 
     public long getEventMax()
     {
-        return eventMax;
+        return getLongOption(EVENT_MAX_OPTION_LONG);
+    }
+
+    public int getThreadMax()
+    {
+        return (int)getLongOption(THREAD_MAX_OPTION_LONG);
+    }
+
+    public boolean hasEventMax()
+    {
+        return commandLine.hasOption(EVENT_MAX_OPTION_LONG);
+    }
+
+    public boolean hasThreadMax()
+    {
+        return commandLine.hasOption(THREAD_MAX_OPTION_LONG);
     }
 
     private CommandLine getCommandLine(String[] arguments)
@@ -72,15 +74,15 @@ public class ApplicationParameters
 
     private Options getOptions()
     {
-        Option dataOption = new Option("d", "data", true, "the path of the data zip");
+        Option dataOption = new Option("d", DATA_OPTION_LONG, true, "the path of the data zip");
         dataOption.setRequired(true);
         dataOption.setType(String.class);
 
-        Option threadMaxOption = new Option("t", "thread-max", true, "the maximum number of threads to use");
+        Option threadMaxOption = new Option("t", THREAD_MAX_OPTION_LONG, true, "the maximum number of threads to use");
         threadMaxOption.setRequired(false);
         threadMaxOption.setType(Number.class);
 
-        Option eventMaxOption = new Option("e", "event-max", true, "the maximum number of events to process");
+        Option eventMaxOption = new Option("e", EVENT_MAX_OPTION_LONG, true, "the maximum number of events to process");
         eventMaxOption.setRequired(false);
         eventMaxOption.setType(Number.class);
 
@@ -90,6 +92,18 @@ public class ApplicationParameters
         options.addOption(threadMaxOption);
 
         return options;
+    }
+
+    private long getLongOption(String name)
+    {
+        try
+        {
+            return (Long)commandLine.getParsedOptionValue(name);
+        }
+        catch (Exception exception)
+        {
+            throw new IllegalArgumentException(exception);
+        }
     }
 }
 
