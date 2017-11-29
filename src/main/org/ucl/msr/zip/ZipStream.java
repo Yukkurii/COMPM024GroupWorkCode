@@ -7,39 +7,38 @@
  *      http://creativecommons.org/licenses/by/4.0/
  */
 
-package org.ucl.msr;
+package org.ucl.msr.zip;
 
-import java.io.Closeable;
-import java.io.File;
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.util.Iterator;
-import java.util.zip.ZipFile;
+import java.util.zip.ZipInputStream;
 
 /**
- * Instances of this class represent an archive compressed using the ZIP
- * format.
+ * Instances of this class represent a stream whose contents are compressed
+ * using the ZIP format. Methods are provide to iterate through its contents.
  *
  * @author Blair Butterworth
  * @author Chenghui Fan
  */
-public class ZipArchive implements Iterable<ZipElement>, Closeable
+public class ZipStream implements ZipArchive
 {
-    private ZipFile archive;
+    private ZipInputStream stream;
 
-    public ZipArchive(File file) throws IOException
+    public ZipStream(byte[] archive)
     {
-        archive = new ZipFile(file);
+        stream = new ZipInputStream(new ByteArrayInputStream(archive));
     }
 
     @Override
     public Iterator<ZipElement> iterator()
     {
-        return new ZipIterator(archive);
+        return new ZipStreamIterator(stream);
     }
 
     @Override
     public void close() throws IOException
     {
-        archive.close();
+        stream.close();
     }
 }

@@ -7,7 +7,7 @@
  *      http://creativecommons.org/licenses/by/4.0/
  */
 
-package org.ucl.msr;
+package org.ucl.msr.zip;
 
 /**
  * Instances of this class represent a single compressed element, a single

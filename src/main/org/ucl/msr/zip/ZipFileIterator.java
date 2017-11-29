@@ -7,7 +7,7 @@
  *      http://creativecommons.org/licenses/by/4.0/
  */
 
-package org.ucl.msr;
+package org.ucl.msr.zip;
 
 import org.apache.commons.io.IOUtils;
 
@@ -20,17 +20,17 @@ import java.util.zip.ZipFile;
 
 /**
  * Instances of this class implement the {@link Iterator} interface, iterating
- * through the contents of a {@link ZipArchive}.
+ * through the contents of a {@link ZipFile}.
  *
  * @author Blair Butterworth
  * @author Chenghui Fan
  */
-public class ZipIterator implements Iterator<ZipElement>
+public class ZipFileIterator implements Iterator<ZipElement>
 {
     private ZipFile archive;
     private Enumeration<? extends ZipEntry> entries;
 
-    public ZipIterator(ZipFile archive)
+    public ZipFileIterator(ZipFile archive)
     {
         this.archive = archive;
         this.entries = archive.entries();

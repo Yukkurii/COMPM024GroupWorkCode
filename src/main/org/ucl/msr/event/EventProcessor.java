@@ -7,15 +7,18 @@
  *      http://creativecommons.org/licenses/by/4.0/
  */
 
-package org.ucl.msr;
+package org.ucl.msr.event;
 
 import cc.kave.commons.model.events.IDEEvent;
 
-public class TestPatternProcessor implements EventProcessor
+/**
+ * Implementors of this interface provide a method that is called when
+ * iterating through a collection of event data.
+ *
+ * @author Blair Butterworth
+ * @author Chenghui Fan
+ */
+public interface EventProcessor
 {
-    @Override
-    public void process(IDEEvent event)
-    {
-        System.out.println(event.toString());
-    }
+    void process(IDEEvent event);
 }

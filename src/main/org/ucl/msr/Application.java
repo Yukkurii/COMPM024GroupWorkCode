@@ -9,7 +9,12 @@
 
 package org.ucl.msr;
 
+import org.ucl.msr.event.EventIterator;
+import org.ucl.msr.event.TestPatternProcessor;
+
 import java.nio.file.Paths;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadPoolExecutor;
 
 /**
  * Instances of this class contain the entry point to the system. When called,
@@ -28,9 +33,11 @@ public class Application
             TestPatternProcessor processor = new TestPatternProcessor();
             ApplicationParameters parameters = new ApplicationParameters(arguments);
 
+
             EventIterator iterator = new EventIterator(Paths.get(parameters.getDataPath()), processor);
-            Thread thread = new Thread(iterator);
-            thread.start();
+
+            ThreadPoolExecutor executor = (ThreadPoolExecutor) Executors.newFixedThreadPool(2);
+            executor.submit(iterator);
         }
         catch (Exception exception)
         {
