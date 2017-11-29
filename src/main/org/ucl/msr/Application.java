@@ -11,6 +11,8 @@ package org.ucl.msr;
 
 import org.ucl.msr.event.EventIterator;
 import org.ucl.msr.event.TestPatternProcessor;
+import org.ucl.msr.zip.ZipArchive;
+import org.ucl.msr.zip.ZipFile;
 
 import java.nio.file.Paths;
 import java.util.concurrent.Executors;
@@ -32,11 +34,9 @@ public class Application
         {
             TestPatternProcessor processor = new TestPatternProcessor();
             ApplicationParameters parameters = new ApplicationParameters(arguments);
-
-
-            EventIterator iterator = new EventIterator(Paths.get(parameters.getDataPath()), processor);
-
-            ThreadPoolExecutor executor = (ThreadPoolExecutor) Executors.newFixedThreadPool(2);
+            ZipArchive archive = new ZipFile(parameters.getDataPath());
+            ThreadPoolExecutor executor = (ThreadPoolExecutor) Executors.newFixedThreadPool(4);
+            EventIterator iterator = new EventIterator(archive, processor, executor);
             executor.submit(iterator);
         }
         catch (Exception exception)

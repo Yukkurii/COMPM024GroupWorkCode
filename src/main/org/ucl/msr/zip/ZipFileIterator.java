@@ -69,7 +69,7 @@ public class ZipFileIterator implements Iterator<ZipElement>
         }
         catch (Exception e)
         {
-            throw new RuntimeException(e); //TODO: Need better error handling
+            throw new RuntimeException(e); //TODO: Bad - improve
         }
     }
 }

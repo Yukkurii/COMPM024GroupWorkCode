@@ -9,8 +9,11 @@
 
 package org.ucl.msr.zip;
 
+import org.omg.SendingContext.RunTime;
+
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Path;
 import java.util.Iterator;
 
 /**
@@ -24,9 +27,21 @@ public class ZipFile implements ZipArchive
 {
     private java.util.zip.ZipFile archive;
 
-    public ZipFile(File file) throws IOException
+    public ZipFile(File file)
     {
-        archive = new java.util.zip.ZipFile(file);
+        try
+        {
+            archive = new java.util.zip.ZipFile(file);
+        }
+        catch (Exception e)
+        {
+            throw new RuntimeException(e); //TODO: Bad - improve
+        }
+    }
+
+    public ZipFile(String path)
+    {
+        this(new File(path));
     }
 
     @Override

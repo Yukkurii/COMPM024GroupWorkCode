@@ -16,6 +16,6 @@ public class TestPatternProcessor implements EventProcessor
     @Override
     public void process(IDEEvent event)
     {
-        System.out.println(event.toString());
+        //System.out.println(event.ActiveWindow);
     }
 }

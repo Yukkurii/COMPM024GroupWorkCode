@@ -9,11 +9,14 @@
 
 package org.ucl.msr.event;
 
+import cc.kave.commons.model.events.IDEEvent;
+import cc.kave.commons.utils.io.json.JsonUtils;
 import org.ucl.msr.zip.ZipArchive;
 import org.ucl.msr.zip.ZipElement;
-import org.ucl.msr.zip.ZipFile;
+import org.ucl.msr.zip.ZipStream;
 
-import java.nio.file.Path;
+import java.nio.charset.StandardCharsets;
+import java.util.concurrent.ExecutorService;
 
 /**
  * Instances of the class iterate through a collection of MSR mining challenge
@@ -24,51 +27,50 @@ import java.nio.file.Path;
  */
 public class EventIterator implements Runnable
 {
-    private Path path;
+    private ZipArchive archive;
     private EventProcessor processor;
+    private ExecutorService executor;
 
-    public EventIterator(Path path, EventProcessor processor)
+    public EventIterator(ZipArchive archive, EventProcessor processor, ExecutorService executor)
     {
-        this.path = path;
+        this.archive = archive;
         this.processor = processor;
+        this.executor = executor;
     }
 
     @Override
     public void run()
     {
-        try (ZipArchive archive = new ZipFile(path.toFile()))
+        for (ZipElement element: archive)
         {
-            for (ZipElement element: archive)
-            {
-                String elementName = element.getName();
+            String elementName = element.getName();
 
-                if (elementName.endsWith("json"))
-                {
-                    processJson(element);
-                }
-                else if (elementName.endsWith("zip"))
-                {
-                    processArchive(element);
-                }
+            if (elementName.endsWith("json"))
+            {
+                processJson(element);
             }
-        }
-        catch (Exception exception)
-        {
-            throw new RuntimeException(exception); //TODO: Improve error handling
+            else if (elementName.endsWith("zip"))
+            {
+                processArchive(element);
+            }
         }
     }
 
     private void processArchive(ZipElement element)
     {
         System.out.println(element.getName());
+
+        ZipArchive archive = new ZipStream(element.getData());
+        EventIterator iterator = new EventIterator(archive, processor, executor);
+        executor.submit(iterator);
     }
 
     private void processJson(ZipElement element)
     {
         System.out.println(element.getName());
 
-//        String content = new String(element.getData(), StandardCharsets.UTF_8);
-//        IDEEvent event = JsonUtils.fromJson(content, IDEEvent.class);
-//        processor.process(event);
+        String content = new String(element.getData(), StandardCharsets.UTF_8);
+        IDEEvent event = JsonUtils.fromJson(content, IDEEvent.class);
+        processor.process(event);
     }
 }

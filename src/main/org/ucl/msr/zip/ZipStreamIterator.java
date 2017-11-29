@@ -37,7 +37,7 @@ public class ZipStreamIterator implements Iterator<ZipElement>
         }
         catch (Exception exception)
         {
-            throw new RuntimeException(exception); //TODO: Need better error handling
+            throw new RuntimeException(exception); //TODO: Bad - improve
         }
     }
 
@@ -58,7 +58,7 @@ public class ZipStreamIterator implements Iterator<ZipElement>
         }
         catch (Exception exception)
         {
-            throw new RuntimeException(exception); //TODO: Need better error handling
+            throw new RuntimeException(exception); //TODO: Bad - improve
         }
     }
 
@@ -85,7 +85,7 @@ public class ZipStreamIterator implements Iterator<ZipElement>
         }
         catch (Exception exception)
         {
-            throw new RuntimeException(exception); //TODO: Need better error handling
+            throw new RuntimeException(exception); //TODO: Bad - improve
         }
     }
 }
