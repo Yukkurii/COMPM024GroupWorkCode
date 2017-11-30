@@ -5,6 +5,7 @@ import cc.kave.commons.model.naming.idecomponents.IWindowName;
 import org.junit.Assert;
 import org.junit.Test;
 import org.mockito.Mockito;
+import org.ucl.msr.data.EventData;
 
 import java.time.LocalDateTime;
 import java.time.Month;
@@ -22,7 +23,8 @@ public class TestPatternProcessorTest
         EditEvent testEvent = createEditEvent("1", "FooTest.cs", time);
         EditEvent nonTestEvent = createEditEvent("1", "Foo.cs", time);
 
-        TestPatternProcessor processor = new TestPatternProcessor();
+        EventData eventData = new EventData();
+        TestPatternProcessor processor = new TestPatternProcessor(eventData);
         Assert.assertEquals(true, processor.isTestFile(testEvent));
         Assert.assertEquals(false, processor.isTestFile(nonTestEvent));
     }
@@ -41,7 +43,8 @@ public class TestPatternProcessorTest
         EditEvent event5 = createEditEvent("Beta", "Foo.cs", day1A);
         EditEvent event6 = createEditEvent("Beta", "FooTest.cs", day1B);
 
-        TestPatternProcessor processor = new TestPatternProcessor();
+        EventData eventData = new EventData();
+        TestPatternProcessor processor = new TestPatternProcessor(eventData);
         processor.process(event1);
         processor.process(event2);
         processor.process(event3);
@@ -53,7 +56,7 @@ public class TestPatternProcessorTest
         ZonedDateTime day1Key = day1A.truncatedTo(ChronoUnit.DAYS);
         ZonedDateTime day2Key = day2.truncatedTo(ChronoUnit.DAYS);
 
-        Map<String, Map<ZonedDateTime, Integer>> testEdits = processor.getTestEdits();
+        Map<String, Map<ZonedDateTime, Integer>> testEdits = eventData.getEditData().getTestEdits();
         Assert.assertEquals(2, testEdits.get("Alpha").size());
         Assert.assertEquals(1, testEdits.get("Beta").size());
 

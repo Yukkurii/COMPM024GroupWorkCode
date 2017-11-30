@@ -10,7 +10,7 @@ execute the following command. Note: to run a script on OSX and linux you need
 to start the command with "./".
 
 ```
-gradlew run -Ddata="PATH_TO_YOUR_DATA_ZIP"
+gradlew run -Ddata="DATA_ZIP_PATH" --Doutput "REPORT_OUTPUT_PATH"
 ```
 
 ## How to Develop

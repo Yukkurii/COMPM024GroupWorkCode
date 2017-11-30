@@ -10,14 +10,13 @@
 package org.ucl.msr.event;
 
 import cc.kave.commons.model.events.IDEEvent;
-import cc.kave.commons.model.events.userprofiles.UserProfileEvent;
 import cc.kave.commons.model.events.visualstudio.EditEvent;
+import org.ucl.msr.data.EditData;
+import org.ucl.msr.data.EventData;
 
 import java.time.ZonedDateTime;
-import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
-import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -29,75 +28,11 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public class TestPatternProcessor implements EventProcessor
 {
-    private Map<String, Map<ZonedDateTime, Integer>> testEdits;
-    private Map<String, Map<ZonedDateTime, Integer>> mainEdits;
-    private Map<String, Collection<String>> sessions;
+    private EditData editData;
 
-    public TestPatternProcessor()
+    public TestPatternProcessor(EventData eventData)
     {
-        testEdits = new ConcurrentHashMap<>();
-        mainEdits = new ConcurrentHashMap<>();
-        sessions = new ConcurrentHashMap<>();
-    }
-
-    public Map<String, Map<ZonedDateTime, Integer>> getMainEdits()
-    {
-        return mainEdits;
-    }
-
-    public Map<String, Map<ZonedDateTime, Integer>> getTestEdits()
-    {
-        return testEdits;
-    }
-
-    public Map<String, Collection<String>> getSessions()
-    {
-        return sessions;
-    }
-
-    public void printCsv()
-    {
-        Map<String, Map<ZonedDateTime, Integer>> profileMainEdits = convertSessionsToProfiles(mainEdits);
-        Map<String, Map<ZonedDateTime, Integer>> profileTestEdits = convertSessionsToProfiles(testEdits);
-        outputInCsvFormat("main", profileMainEdits);
-        outputInCsvFormat("test", profileTestEdits);
-    }
-
-    private Map<String, Map<ZonedDateTime, Integer>> convertSessionsToProfiles(Map<String, Map<ZonedDateTime, Integer>> edits)
-    {
-        Map<String, Map<ZonedDateTime, Integer>> result = new HashMap<>();
-        for (Entry<String, Collection<String>> session: sessions.entrySet())
-        {
-            Map<ZonedDateTime, Integer> sessionEdits = new HashMap<>();
-            for (String alias: session.getValue())
-            {
-                Map<ZonedDateTime, Integer> aliasEdits = edits.get(alias);
-                if (aliasEdits != null)
-                {
-                    for (Entry<ZonedDateTime, Integer> aliasEdit : aliasEdits.entrySet())
-                    {
-                        Integer sessionEdit = sessionEdits.get(aliasEdit.getKey());
-                        sessionEdit = sessionEdit == null ? aliasEdit.getValue() : sessionEdit + aliasEdit.getValue();
-                        sessionEdits.put(aliasEdit.getKey(), sessionEdit);
-                    }
-                }
-            }
-            result.put(session.getKey(), sessionEdits);
-        }
-        return result;
-    }
-
-    private void outputInCsvFormat(String id, Map<String, Map<ZonedDateTime, Integer>> edits)
-    {
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
-        for (Entry<String, Map<ZonedDateTime, Integer>> session: edits.entrySet())
-        {
-            for (Entry<ZonedDateTime, Integer> edit: session.getValue().entrySet())
-            {
-                String date = edit.getKey().format(formatter);
-                System.out.println(id + "," + session.getKey() + "," + date + "," + edit.getValue());
-            }
-        }
+        this.editData = eventData.getEditData();
     }
 
     @Override
@@ -108,20 +43,15 @@ public class TestPatternProcessor implements EventProcessor
             EditEvent editEvent = (EditEvent)event;
             incrementEdits(editEvent);
         }
-        else if (event instanceof UserProfileEvent)
-        {
-            UserProfileEvent profileEvent = (UserProfileEvent)event;
-            associateSession(profileEvent);
-        }
     }
 
     private void incrementEdits(EditEvent event)
     {
         if (isTestFile(event)){
-            incrementEdits(event, testEdits);
+            incrementEdits(event, editData.getTestEdits());
         }
         else {
-            incrementEdits(event, mainEdits);
+            incrementEdits(event, editData.getMainEdits());
         }
     }
 
@@ -151,13 +81,5 @@ public class TestPatternProcessor implements EventProcessor
     {
         ZonedDateTime eventTime = editEvent.TriggeredAt;
         return eventTime.truncatedTo(ChronoUnit.DAYS);
-    }
-
-    private void associateSession(UserProfileEvent event)
-    {
-        Collection<String> sessionList = sessions.get(event.ProfileId);
-        sessionList = sessionList == null ? Collections.synchronizedList(new ArrayList<String>()) : sessionList;
-        sessionList.add(event.IDESessionUUID);
-        sessions.put(event.ProfileId, sessionList);
     }
 }

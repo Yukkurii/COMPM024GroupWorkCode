@@ -23,6 +23,7 @@ import org.apache.commons.cli.*;
 public class ApplicationParameters
 {
     private static final String DATA_OPTION_LONG = "data";
+    private static final String OUTPUT_OPTION_LONG = "output";
     private static final String EVENT_MAX_OPTION_LONG = "event-max";
     private static final String THREAD_MAX_OPTION_LONG = "thread-max";
     
@@ -36,6 +37,11 @@ public class ApplicationParameters
     public String getDataPath()
     {
         return commandLine.getOptionValue(DATA_OPTION_LONG);
+    }
+
+    public String getOutputPath()
+    {
+        return commandLine.getOptionValue(OUTPUT_OPTION_LONG);
     }
 
     public long getEventMax()
@@ -78,6 +84,10 @@ public class ApplicationParameters
         dataOption.setRequired(true);
         dataOption.setType(String.class);
 
+        Option outputOption = new Option("o", OUTPUT_OPTION_LONG, true, "the directory into which reports will be written");
+        outputOption.setRequired(true);
+        outputOption.setType(String.class);
+
         Option threadMaxOption = new Option("t", THREAD_MAX_OPTION_LONG, true, "the maximum number of threads to use");
         threadMaxOption.setRequired(false);
         threadMaxOption.setType(Number.class);
@@ -88,6 +98,7 @@ public class ApplicationParameters
 
         Options options = new Options();
         options.addOption(dataOption);
+        options.addOption(outputOption);
         options.addOption(eventMaxOption);
         options.addOption(threadMaxOption);
 
