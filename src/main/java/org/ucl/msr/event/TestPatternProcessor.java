@@ -33,9 +33,9 @@ public class TestPatternProcessor implements EventProcessor
 
     public TestPatternProcessor()
     {
-        testEdits = new ConcurrentHashMap();
-        mainEdits = new ConcurrentHashMap();
-        sessions = new ConcurrentHashMap();
+        testEdits = new ConcurrentHashMap<>();
+        mainEdits = new ConcurrentHashMap<>();
+        sessions = new ConcurrentHashMap<>();
     }
 
     @Override
@@ -66,7 +66,7 @@ public class TestPatternProcessor implements EventProcessor
     private void incrementEdits(EditEvent event, Map<String, Map<ZonedDateTime, Integer>> edits)
     {
         Map<ZonedDateTime, Integer> sessions = edits.get(event.IDESessionUUID);
-        sessions = sessions == null ? new ConcurrentHashMap() : sessions;
+        sessions = sessions == null ? new ConcurrentHashMap<>() : sessions;
         incrementEditsForDay(event, sessions);
         testEdits.put(event.IDESessionUUID, sessions);
     }

@@ -18,7 +18,6 @@ import org.ucl.msr.zip.ZipStream;
 import java.nio.charset.StandardCharsets;
 import java.util.concurrent.CancellationException;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.TimeUnit;
 
 /**
  * Instances of the class iterate through a collection of MSR mining challenge

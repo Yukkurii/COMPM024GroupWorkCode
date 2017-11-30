@@ -16,17 +16,19 @@ public class ZipStreamTest
         InputStream inputStream = ZipStreamTest.class.getResourceAsStream("/Archive.zip");
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         IOUtils.copy(inputStream, outputStream);
-        ZipStream zipStream = new ZipStream(outputStream.toByteArray());
-
-        Collection<String> contents = new ArrayList<String>();
-        for (ZipElement element: zipStream){
-            contents.add(element.getName());
+        
+        try(ZipStream zipStream = new ZipStream(outputStream.toByteArray()))
+        {
+	        Collection<String> contents = new ArrayList<String>();
+	        for (ZipElement element: zipStream){
+	            contents.add(element.getName());
+	        }
+	
+	        Assert.assertTrue("iteration returned incorrect number of contents", contents.size() == 4);
+	        Assert.assertTrue("file1.txt missing", contents.contains("file1.txt"));
+	        Assert.assertTrue("file2.txt missing", contents.contains("file2.txt"));
+	        Assert.assertTrue("directory/ missing", contents.contains("directory/"));
+	        Assert.assertTrue("directory.file3.txt missing", contents.contains("directory/file3.txt"));
         }
-
-        Assert.assertTrue("iteration returned incorrect number of contents", contents.size() == 4);
-        Assert.assertTrue("file1.txt missing", contents.contains("file1.txt"));
-        Assert.assertTrue("file2.txt missing", contents.contains("file2.txt"));
-        Assert.assertTrue("directory/ missing", contents.contains("directory/"));
-        Assert.assertTrue("directory.file3.txt missing", contents.contains("directory/file3.txt"));
     }
 }

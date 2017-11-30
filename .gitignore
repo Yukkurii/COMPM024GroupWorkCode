@@ -1,6 +1,6 @@
-.DS_STORE
-.classpath
-.project
+**/.DS_STORE
+**/.classpath
+**/.project
 *.iml
 *.ipr
 *.iws
