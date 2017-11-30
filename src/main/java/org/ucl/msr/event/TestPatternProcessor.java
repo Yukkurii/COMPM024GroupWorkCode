@@ -38,6 +38,21 @@ public class TestPatternProcessor implements EventProcessor
         sessions = new ConcurrentHashMap<>();
     }
 
+    public Map<String, Map<ZonedDateTime, Integer>> getMainEdits()
+    {
+        return mainEdits;
+    }
+
+    public Map<String, Map<ZonedDateTime, Integer>> getTestEdits()
+    {
+        return testEdits;
+    }
+
+    public Map<String, Collection<String>> getSessions()
+    {
+        return sessions;
+    }
+
     @Override
     public void process(IDEEvent event)
     {
@@ -68,7 +83,7 @@ public class TestPatternProcessor implements EventProcessor
         Map<ZonedDateTime, Integer> sessions = edits.get(event.IDESessionUUID);
         sessions = sessions == null ? new ConcurrentHashMap<>() : sessions;
         incrementEditsForDay(event, sessions);
-        testEdits.put(event.IDESessionUUID, sessions);
+        edits.put(event.IDESessionUUID, sessions);
     }
 
     private void incrementEditsForDay(EditEvent event, Map<ZonedDateTime, Integer> sessions)
@@ -79,22 +94,15 @@ public class TestPatternProcessor implements EventProcessor
         sessions.put(day, edits);
     }
 
-    private boolean isTestFile(EditEvent editEvent)
+    boolean isTestFile(EditEvent editEvent)
     {
         String fileName = editEvent.ActiveWindow.getCaption();
-        boolean result = fileName.endsWith("Test.cs") || fileName.endsWith("Tests.cs");
-
-        /*
-        if (!result && fileName.contains("Test")){
-            System.out.println("Unrecorded test file: " + fileName);
-        }
-        */
-        return result;
+        return fileName.endsWith("Test.cs") || fileName.endsWith("Tests.cs");
     }
 
     private ZonedDateTime getDay(EditEvent editEvent)
     {
-        ZonedDateTime eventTime = editEvent.getTriggeredAt();
+        ZonedDateTime eventTime = editEvent.TriggeredAt;
         return eventTime.truncatedTo(ChronoUnit.DAYS);
     }
 

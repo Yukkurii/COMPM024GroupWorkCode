@@ -48,9 +48,11 @@ public class Application
         }
     }
 
+    private static TestPatternProcessor testProcessor;
+
     private static EventProcessor getEventProcessor(ApplicationParameters parameters)
     {
-        EventProcessor testProcessor = new TestPatternProcessor();
+        testProcessor = new TestPatternProcessor();
         EventProcessor performanceProcessor = new PerformanceProcessor();
         EventProcessor result = new CompositeProcessor(testProcessor, performanceProcessor);
 
