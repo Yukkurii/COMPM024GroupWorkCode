@@ -14,8 +14,10 @@ import cc.kave.commons.model.events.userprofiles.UserProfileEvent;
 import cc.kave.commons.model.events.visualstudio.EditEvent;
 
 import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
+import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -51,6 +53,51 @@ public class TestPatternProcessor implements EventProcessor
     public Map<String, Collection<String>> getSessions()
     {
         return sessions;
+    }
+
+    public void printCsv()
+    {
+        Map<String, Map<ZonedDateTime, Integer>> profileMainEdits = convertSessionsToProfiles(mainEdits);
+        Map<String, Map<ZonedDateTime, Integer>> profileTestEdits = convertSessionsToProfiles(testEdits);
+        outputInCsvFormat("main", profileMainEdits);
+        outputInCsvFormat("test", profileTestEdits);
+    }
+
+    private Map<String, Map<ZonedDateTime, Integer>> convertSessionsToProfiles(Map<String, Map<ZonedDateTime, Integer>> edits)
+    {
+        Map<String, Map<ZonedDateTime, Integer>> result = new HashMap<>();
+        for (Entry<String, Collection<String>> session: sessions.entrySet())
+        {
+            Map<ZonedDateTime, Integer> sessionEdits = new HashMap<>();
+            for (String alias: session.getValue())
+            {
+                Map<ZonedDateTime, Integer> aliasEdits = edits.get(alias);
+                if (aliasEdits != null)
+                {
+                    for (Entry<ZonedDateTime, Integer> aliasEdit : aliasEdits.entrySet())
+                    {
+                        Integer sessionEdit = sessionEdits.get(aliasEdit.getKey());
+                        sessionEdit = sessionEdit == null ? aliasEdit.getValue() : sessionEdit + aliasEdit.getValue();
+                        sessionEdits.put(aliasEdit.getKey(), sessionEdit);
+                    }
+                }
+            }
+            result.put(session.getKey(), sessionEdits);
+        }
+        return result;
+    }
+
+    private void outputInCsvFormat(String id, Map<String, Map<ZonedDateTime, Integer>> edits)
+    {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
+        for (Entry<String, Map<ZonedDateTime, Integer>> session: edits.entrySet())
+        {
+            for (Entry<ZonedDateTime, Integer> edit: session.getValue().entrySet())
+            {
+                String date = edit.getKey().format(formatter);
+                System.out.println(id + "," + session.getKey() + "," + date + "," + edit.getValue());
+            }
+        }
     }
 
     @Override

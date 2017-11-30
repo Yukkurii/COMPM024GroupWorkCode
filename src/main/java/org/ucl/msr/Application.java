@@ -29,6 +29,8 @@ import java.util.concurrent.*;
 public class Application
 {
     private static final int DEFAULT_THREAD_MAX = 4;
+    private static TestPatternProcessor testProcessor;
+    private static PerformanceProcessor performanceProcessor;
 
     public static void main(String[] arguments)
     {
@@ -41,6 +43,8 @@ public class Application
             ExecutorService executor = getExecutorService(parameters);
             EventIterator iterator = new EventIterator(archive, processor, executor);
             executor.invokeAll(Arrays.asList(iterator));
+
+            testProcessor.printCsv();
         }
         catch (Exception exception)
         {
@@ -48,16 +52,13 @@ public class Application
         }
     }
 
-    private static TestPatternProcessor testProcessor;
-
     private static EventProcessor getEventProcessor(ApplicationParameters parameters)
     {
         testProcessor = new TestPatternProcessor();
-        EventProcessor performanceProcessor = new PerformanceProcessor();
-        EventProcessor result = new CompositeProcessor(testProcessor, performanceProcessor);
+        performanceProcessor = new PerformanceProcessor();
 
-        if (parameters.hasEventMax())
-        {
+        EventProcessor result = new CompositeProcessor(testProcessor, performanceProcessor);
+        if (parameters.hasEventMax()){
             result = new LimitedRunProcessor(result, parameters.getEventMax());
         }
         return result;
