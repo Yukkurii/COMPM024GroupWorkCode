@@ -48,6 +48,7 @@ public class LimitedRunProcessor implements EventProcessor
         }
         else
         {
+            System.out.println();
             throw new CancellationException();
         }
     }

@@ -16,6 +16,7 @@ import org.ucl.msr.zip.ZipElement;
 import org.ucl.msr.zip.ZipStream;
 
 import java.nio.charset.StandardCharsets;
+import java.util.concurrent.Callable;
 import java.util.concurrent.CancellationException;
 import java.util.concurrent.ExecutorService;
 
@@ -26,7 +27,7 @@ import java.util.concurrent.ExecutorService;
  * @author Blair Butterworth
  * @author Chenghui Fan
  */
-public class EventIterator implements Runnable
+public class EventIterator implements Callable<EventProcessor>
 {
     private ZipArchive archive;
     private EventProcessor processor;
@@ -40,7 +41,7 @@ public class EventIterator implements Runnable
     }
 
     @Override
-    public void run()
+    public EventProcessor call()
     {
         try
         {
@@ -50,6 +51,7 @@ public class EventIterator implements Runnable
         {
             executor.shutdownNow();
         }
+        return processor;
     }
 
     private void processArchive(ZipArchive archive)

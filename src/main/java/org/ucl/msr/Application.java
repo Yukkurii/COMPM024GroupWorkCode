@@ -13,8 +13,10 @@ import org.ucl.msr.event.*;
 import org.ucl.msr.zip.ZipArchive;
 import org.ucl.msr.zip.ZipFile;
 
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.concurrent.*;
 
 /**
  * Instances of this class contain the entry point to the system. When called,
@@ -38,11 +40,11 @@ public class Application
 
             ExecutorService executor = getExecutorService(parameters);
             EventIterator iterator = new EventIterator(archive, processor, executor);
-            executor.submit(iterator);
+            executor.invokeAll(Arrays.asList(iterator));
         }
         catch (Exception exception)
         {
-            System.out.println(exception.getMessage());
+            exception.printStackTrace();
         }
     }
 
