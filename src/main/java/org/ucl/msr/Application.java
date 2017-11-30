@@ -13,9 +13,7 @@ import org.ucl.msr.event.*;
 import org.ucl.msr.zip.ZipArchive;
 import org.ucl.msr.zip.ZipFile;
 
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.concurrent.*;
 
 /**
