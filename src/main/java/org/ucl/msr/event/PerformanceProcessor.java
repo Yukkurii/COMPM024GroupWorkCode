@@ -12,16 +12,17 @@ package org.ucl.msr.event;
 import cc.kave.commons.model.events.IDEEvent;
 
 /**
- * Instances of this class are used a placeholder {@link EventProcessor}.
+ * Instances of this class search the MSR data set calculating each users
+ * performance.
  *
  * @author Blair Butterworth
  * @author Chenghui Fan
  */
-public class DummyProcessor implements EventProcessor
+public class PerformanceProcessor implements EventProcessor
 {
     @Override
     public void process(IDEEvent event)
     {
-        System.out.println(event);
+        // Insert magic ---> here <---
     }
 }

@@ -19,6 +19,12 @@ import cc.kave.commons.model.events.IDEEvent;
 import java.util.Collections;
 import java.util.concurrent.CancellationException;
 
+/**
+ * Instances of this class process events up to a specified limit.
+ *
+ * @author Blair Butterworth
+ * @author Chenghui Fan
+ */
 public class LimitedRunProcessor implements EventProcessor
 {
     private long runMax;

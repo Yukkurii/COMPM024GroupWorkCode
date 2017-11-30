@@ -18,6 +18,13 @@ import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
+/**
+ * Instances of this class search the data set for edit events, recording those
+ * that are made to test files and those that are made to non-test files.
+ *
+ * @author Blair Butterworth
+ * @author Chenghui Fan
+ */
 public class TestPatternProcessor implements EventProcessor
 {
     private Map<String, Map<ZonedDateTime, Integer>> testEdits;

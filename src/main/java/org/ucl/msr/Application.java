@@ -13,6 +13,7 @@ import org.ucl.msr.event.*;
 import org.ucl.msr.zip.ZipArchive;
 import org.ucl.msr.zip.ZipFile;
 
+import java.util.Arrays;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -48,7 +49,10 @@ public class Application
 
     private static EventProcessor getEventProcessor(ApplicationParameters parameters)
     {
-        EventProcessor result = new TestPatternProcessor();
+        EventProcessor testProcessor = new TestPatternProcessor();
+        EventProcessor performanceProcessor = new PerformanceProcessor();
+        EventProcessor result = new CompositeProcessor(testProcessor, performanceProcessor);
+
         if (parameters.hasEventMax())
         {
             result = new LimitedRunProcessor(result, parameters.getEventMax());

@@ -6,7 +6,8 @@ application (...and breathe).
 ## How To Run
 
 To run the application, navigate to the repository using the command line, and
-execute the following command.
+execute the following command. Note: to run a script on OSX and linux you need
+to start the command with "./".
 
 ```
 gradlew run -Ddata="PATH_TO_YOUR_DATA_ZIP"
