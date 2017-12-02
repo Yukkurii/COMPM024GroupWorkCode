@@ -20,6 +20,7 @@ public class EventData
 {
     private EditData editData;
     private ProfileData profileData;
+    private PerformanceData performanceData;
 
     public EventData()
     {
@@ -35,5 +36,9 @@ public class EventData
     public EditData getEditData()
     {
         return editData;
+    }
+    
+    public PerformanceData getPerformanceData() {
+    	return performanceData;
     }
 }

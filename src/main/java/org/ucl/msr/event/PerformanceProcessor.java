@@ -19,6 +19,10 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.ucl.msr.data.EventData;
+import org.ucl.msr.data.PerformanceData;
+import org.ucl.msr.data.ProfileData;
+
 import cc.kave.commons.model.events.IDEEvent;
 import cc.kave.commons.model.events.userprofiles.UserProfileEvent;
 import cc.kave.commons.model.events.versioncontrolevents.VersionControlAction;
@@ -28,77 +32,39 @@ import cc.kave.commons.model.events.visualstudio.WindowEvent;
 
 /**
  * Instances of this class search the MSR data set calculating each users
- * performance.
+ * performance for each day.
+ * 
+ * performance 		= time/workload
+ * 		time 		= sum(windowOpen to windowClose)
+ * 		workload 	= number of file involved 
  *
  * @author Blair Butterworth
  * @author Chenghui Fan
  */
 
-//Goal: 𝑇𝑖𝑚𝑒𝑆𝑝𝑒𝑛𝑡/(𝑁𝑢𝑚𝑏𝑒𝑟𝑂𝑓𝐹𝑖𝑙𝑒𝑀𝑜𝑑𝑖𝑓𝑖𝑒𝑑 ∗ 𝐴𝑣𝑒𝑟𝑎𝑔𝑒𝑇𝑖𝑚𝑒𝑂𝑛𝐸𝑎𝑐ℎ𝐹𝑖𝑙𝑒), ProfileID known	
 public class PerformanceProcessor implements EventProcessor
 {	
-	private Map<String, Collection<String>> sessionsRef;	//<ProfileID, <sessionID>>
-	private Collection<EditEvent> editEvents;
+	private PerformanceData performanceData;
 	
-    public PerformanceProcessor() {
-    	sessionsRef = new ConcurrentHashMap<>();
-    	editEvents = Collections.synchronizedList(new ArrayList<EditEvent>());
+    public PerformanceProcessor(EventData eventData) {
+    	performanceData = eventData.getPerformanceData();
     }
 	
 	@Override
     public void process(IDEEvent event)
     {
-        if (event instanceof EditEvent)
+        if (event instanceof WindowEvent)
         {
-            EditEvent editEvent = (EditEvent)event;
-            synchronized(editEvents) {
-            	this.editEvents.add(editEvent);
-            }
-        }
-        else if (event instanceof UserProfileEvent)
-        {
-            UserProfileEvent profileEvent = (UserProfileEvent)event;
-            associateSession(profileEvent);
+        	WindowEvent we = (WindowEvent)event;
+        	if(we.ActiveWindow.getCaption().contains(".cs")) {
+            	if(we.Action.toString().equals("Create") || we.Action.toString().equals("Activate")) {
+            		this.performanceData.addFileUsageRecord(we.IDESessionUUID, we.ActiveWindow.getCaption(), we.TriggeredAt, "active");
+            	}
+            	else if(we.Action.toString().equals("Close") || we.Action.toString().equals("Deactivate")) {
+            		this.performanceData.addFileUsageRecord(we.IDESessionUUID, we.ActiveWindow.getCaption(), we.TriggeredAt, "deactive");
+            	}
+        	}
         }
     }
 	
-    private void associateSession(UserProfileEvent event)
-    {
-        Collection<String> sessionList = sessionsRef.get(event.ProfileId);
-        sessionList = sessionList == null ? Collections.synchronizedList(new ArrayList<String>()) : sessionList;
-        sessionList.add(event.IDESessionUUID);
-        sessionsRef.put(event.ProfileId, sessionList);
-    }
-	
-	private long calcTimeSpent(String profileID) {
-		Collection<String> sessions = sessionsRef.get(profileID);
-		Iterator<EditEvent> iterator = this.editEvents.iterator();
-		long duration = 0;
-		while(iterator.hasNext()) {
-			EditEvent e = iterator.next();
-			if(sessions.contains(e.IDESessionUUID)) {
-				duration += e.Duration.toMinutes();
-			}
-		}
-		return duration;
-	}
-	
-//	private void calcAvgTimeOnOneFile() {}
-    
-	private int calcFileNum(String profileID) {
-		Collection<String> sessions = sessionsRef.get(profileID);
-		Iterator<EditEvent> iterator = this.editEvents.iterator();
-		int fileNum = 0;
-		while(iterator.hasNext()) {
-			EditEvent e = iterator.next();
-			if(sessions.contains(e.IDESessionUUID)) {
-				fileNum++;
-			}
-		}
-		return fileNum;
-	}
-	
-//	public void generateCSVfile() throws IOException {
-//
-//	}
 }

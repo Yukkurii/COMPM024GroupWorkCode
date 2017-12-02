@@ -56,7 +56,7 @@ public class Application
     {
         EventProcessor testProcessor = new TestPatternProcessor(eventData);
         EventProcessor profileProcessor = new ProfileProcessor(eventData);
-        EventProcessor performanceProcessor = new PerformanceProcessor();
+        EventProcessor performanceProcessor = new PerformanceProcessor(eventData);
 
         EventProcessor result = new CompositeProcessor(testProcessor, profileProcessor, performanceProcessor);
         if (parameters.hasEventMax()){
