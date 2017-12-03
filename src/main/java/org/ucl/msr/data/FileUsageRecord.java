@@ -11,27 +11,37 @@ import java.util.ArrayList;
  * @author Chenghui Fan
  */
 
-public class FileUsageRecord {
-	String fileName;
-	ArrayList<ZonedDateTime> activateTime;
-	ArrayList<ZonedDateTime> deactivateTime;
+public class FileUsageRecord implements Comparable<FileUsageRecord> {
+	private ZonedDateTime triggeredTime;
+	private String type;
+	private String fileName;
 	
-	public FileUsageRecord(String fileName) {
+	public FileUsageRecord(String fileName, ZonedDateTime triggeredTime, String type) {
 		this.fileName = fileName;
-		this.activateTime = new ArrayList<ZonedDateTime>();
-		this.deactivateTime = new ArrayList<ZonedDateTime>();
+		this.triggeredTime = triggeredTime;
+		this.type = type;
 	}
 	
-	public Duration getDuration() {
-		return null;//TODO
+	public ZonedDateTime getTriggeredTime() {
+		return this.triggeredTime;
 	}
 	
-	public void addUsageTime(ZonedDateTime triggeredTime, String type) {
-		if(type.equals("active")) {
-			activateTime.add(triggeredTime);
+	public String getType() {
+		return this.type;
+	}
+	
+	public String getFileName() {
+		return this.fileName;
+	}
+
+	@Override
+	public int compareTo(FileUsageRecord otherRecord) {
+		if(Duration.between(triggeredTime, otherRecord.getTriggeredTime()).toMillis() > 0) {
+			return -1;
 		}
-		if(type.equals("deactive")) {
-			deactivateTime.add(triggeredTime);
+		if(Duration.between(triggeredTime, otherRecord.getTriggeredTime()).toMillis() < 0) {
+			return 1;
 		}
+		return 0;
 	}
 }

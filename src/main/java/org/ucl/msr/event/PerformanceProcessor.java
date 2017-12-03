@@ -33,10 +33,6 @@ import cc.kave.commons.model.events.visualstudio.WindowEvent;
 /**
  * Instances of this class search the MSR data set calculating each users
  * performance for each day.
- * 
- * performance 		= time/workload
- * 		time 		= sum(windowOpen to windowClose)
- * 		workload 	= number of file involved 
  *
  * @author Blair Butterworth
  * @author Chenghui Fan
@@ -56,7 +52,7 @@ public class PerformanceProcessor implements EventProcessor
         if (event instanceof WindowEvent)
         {
         	WindowEvent we = (WindowEvent)event;
-        	if(we.ActiveWindow.getCaption().contains(".cs")) {
+        	if(we.ActiveWindow.getCaption().contains(".cs")) {	//code files
             	if(we.Action.toString().equals("Create") || we.Action.toString().equals("Activate")) {
             		this.performanceData.addFileUsageRecord(we.IDESessionUUID, we.ActiveWindow.getCaption(), we.TriggeredAt, "active");
             	}
