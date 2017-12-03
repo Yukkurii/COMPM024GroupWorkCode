@@ -26,6 +26,7 @@ public class EventData
     {
         editData = new EditData();
         profileData = new ProfileData();
+        performanceData = new PerformanceData();
     }
 
     public ProfileData getProfileData()

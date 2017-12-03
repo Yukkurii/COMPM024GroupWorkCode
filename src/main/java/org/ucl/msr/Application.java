@@ -12,6 +12,7 @@ package org.ucl.msr;
 import org.ucl.msr.data.EventData;
 import org.ucl.msr.event.*;
 import org.ucl.msr.report.EditReport;
+import org.ucl.msr.report.PerformanceReport;
 import org.ucl.msr.zip.ZipArchive;
 import org.ucl.msr.zip.ZipFile;
 
@@ -45,6 +46,8 @@ public class Application
 
             EditReport editReport = new EditReport(eventData);
             editReport.writeToFile(parameters.getOutputPath(), "edits.csv");
+            PerformanceReport performanceReport = new PerformanceReport(eventData);
+            performanceReport.writeToFile(parameters.getOutputPath(), "performance.csv");
         }
         catch (Exception exception)
         {

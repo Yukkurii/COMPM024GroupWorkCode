@@ -29,25 +29,21 @@ public class PerformanceData {
 		this.performance = new ConcurrentHashMap<>();
 	}
 	
-	public void addFileUsageRecord(String IDESessionUUID, String fileName, ZonedDateTime triggeredTime, String type){
-		Collection<FileUsageRecord> fileUsageRecords = this.performance.get(IDESessionUUID);
-		fileUsageRecords = fileUsageRecords == null ? Collections.synchronizedCollection(new ArrayList<FileUsageRecord>()) : fileUsageRecords;
-		synchronized(fileUsageRecords) {
-			fileUsageRecords.add(new FileUsageRecord(fileName, triggeredTime, type));
-		}
-		performance.put(IDESessionUUID, fileUsageRecords);
+	public Map<String, Collection<FileUsageRecord>> getPerformance(){
+		return performance;
 	}
 	
 	//return <sessionID, performance>
-	public Map<String, Long> getPerformance(){
+	public Map<String, Long> getPerformanceAsLong(){
 		Map<String, Long> outputPerformance = new HashMap<String, Long>();
 		Iterator<String> i = performance.keySet().iterator();
+//		System.out.println("performancesize:" + performance.size());
 		while(i.hasNext()) {
 			String sessionID = i.next();
 			Duration duration = calcDuration(sessionID);
 			int fileNum = calcFileNum(sessionID);
-			if(duration != null && fileNum != -1) {
-				long minutesPerFile = calcDuration(sessionID).toMinutes()/calcFileNum(sessionID);
+			if(duration != null && fileNum != -1 && duration.toMinutes() != 0) {
+				long minutesPerFile = duration.toMinutes()/fileNum;
 				outputPerformance.put(sessionID, 1/minutesPerFile);
 			}
 		}
@@ -55,20 +51,28 @@ public class PerformanceData {
 	}
 	
 	private Duration calcDuration(String IDESessionUUID) {
-		ArrayList<FileUsageRecord> fileUsageRecords = (ArrayList<FileUsageRecord>) performance.get(IDESessionUUID);
+		Collection<FileUsageRecord> fileUsageRecords = performance.get(IDESessionUUID);
 		if (fileUsageRecords == null) {	//in case the dataset has some unexpected data missing
 			return null;
 		}
-		Collections.sort(fileUsageRecords);	//sort by triggeredTime
+		
+		ArrayList<FileUsageRecord> sortedFileUsageRecords = new ArrayList<FileUsageRecord>();
+		Iterator<FileUsageRecord> fileUsageRecordsIterator = fileUsageRecords.iterator();
+		while(fileUsageRecordsIterator.hasNext()) {
+			FileUsageRecord r = fileUsageRecordsIterator.next();
+			sortedFileUsageRecords.add(r);
+		}
+		
+		Collections.sort(sortedFileUsageRecords);	//sort by triggeredTime
 		
 		Map<String, ZonedDateTime> activatedFile = new HashMap<String, ZonedDateTime>();
 		Duration duration = Duration.ZERO;
 		ZonedDateTime lastActiveTime = null;
 		ZonedDateTime lastOperateTime = null;
 		
-		Iterator<FileUsageRecord> i = fileUsageRecords.iterator();
-		while(i.hasNext()) {
-			FileUsageRecord r = i.next();
+		Iterator<FileUsageRecord> sortedFileUsageRecordsIterator = sortedFileUsageRecords.iterator();
+		while(sortedFileUsageRecordsIterator.hasNext()) {
+			FileUsageRecord r = sortedFileUsageRecordsIterator.next();
 			if(r.getType().equals("active")) {
 				activatedFile.put(r.getFileName(), r.getTriggeredTime());
 				if(lastActiveTime == null) {
@@ -91,7 +95,7 @@ public class PerformanceData {
 	}
 	
 	private int calcFileNum(String IDESessionUUID) {
-		ArrayList<FileUsageRecord> fileUsageRecords = (ArrayList<FileUsageRecord>) performance.get(IDESessionUUID);
+		Collection<FileUsageRecord> fileUsageRecords = performance.get(IDESessionUUID);
 		if (fileUsageRecords == null) {	//in case the dataset has some unexpected data missing
 			return -1;
 		}

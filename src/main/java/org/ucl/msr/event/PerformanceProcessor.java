@@ -20,6 +20,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.ucl.msr.data.EventData;
+import org.ucl.msr.data.FileUsageRecord;
 import org.ucl.msr.data.PerformanceData;
 import org.ucl.msr.data.ProfileData;
 
@@ -54,13 +55,23 @@ public class PerformanceProcessor implements EventProcessor
         	WindowEvent we = (WindowEvent)event;
         	if(we.ActiveWindow.getCaption().contains(".cs")) {	//code files
             	if(we.Action.toString().equals("Create") || we.Action.toString().equals("Activate")) {
-            		this.performanceData.addFileUsageRecord(we.IDESessionUUID, we.ActiveWindow.getCaption(), we.TriggeredAt, "active");
+            		System.out.println(we.Action.toString());
+            		addFileUsageRecord(we.IDESessionUUID, we.ActiveWindow.getCaption(), we.TriggeredAt, "active");
             	}
             	else if(we.Action.toString().equals("Close") || we.Action.toString().equals("Deactivate")) {
-            		this.performanceData.addFileUsageRecord(we.IDESessionUUID, we.ActiveWindow.getCaption(), we.TriggeredAt, "deactive");
+            		addFileUsageRecord(we.IDESessionUUID, we.ActiveWindow.getCaption(), we.TriggeredAt, "deactive");
             	}
         	}
         }
     }
+	
+	private void addFileUsageRecord(String IDESessionUUID, String fileName, ZonedDateTime triggeredTime, String type){
+		Collection<FileUsageRecord> fileUsageRecords = this.performanceData.getPerformance().get(IDESessionUUID);
+		fileUsageRecords = fileUsageRecords == null ? Collections.synchronizedCollection(new ArrayList<FileUsageRecord>()) : fileUsageRecords;
+		synchronized(fileUsageRecords) {
+			fileUsageRecords.add(new FileUsageRecord(fileName, triggeredTime, type));
+		}
+		this.performanceData.getPerformance().put(IDESessionUUID, fileUsageRecords);
+	}
 	
 }
