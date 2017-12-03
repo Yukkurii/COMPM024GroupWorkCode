@@ -44,8 +44,12 @@ public class PerformanceData {
 		Iterator<String> i = performance.keySet().iterator();
 		while(i.hasNext()) {
 			String sessionID = i.next();
-			long minutesPerFile = calcDuration(sessionID).toMinutes()/calcFileNum(sessionID);
-			outputPerformance.put(sessionID, 1/minutesPerFile);
+			Duration duration = calcDuration(sessionID);
+			int fileNum = calcFileNum(sessionID);
+			if(duration != null && fileNum != -1) {
+				long minutesPerFile = calcDuration(sessionID).toMinutes()/calcFileNum(sessionID);
+				outputPerformance.put(sessionID, 1/minutesPerFile);
+			}
 		}
 		return outputPerformance;
 	}
@@ -60,6 +64,7 @@ public class PerformanceData {
 		Map<String, ZonedDateTime> activatedFile = new HashMap<String, ZonedDateTime>();
 		Duration duration = Duration.ZERO;
 		ZonedDateTime lastActiveTime = null;
+		ZonedDateTime lastOperateTime = null;
 		
 		Iterator<FileUsageRecord> i = fileUsageRecords.iterator();
 		while(i.hasNext()) {
@@ -77,6 +82,10 @@ public class PerformanceData {
 					lastActiveTime = null;
 				}
 			}
+			lastOperateTime = r.getTriggeredTime();
+		}
+		if(lastActiveTime != null) {	//in case the coding crossed the midnight
+			duration = duration.plus(Duration.between(lastActiveTime, lastOperateTime).abs());
 		}
 		return duration;
 	}
