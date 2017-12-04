@@ -47,11 +47,15 @@ public class TestPatternProcessor implements EventProcessor
 
     private void incrementEdits(EditEvent event)
     {
-        if (isTestFile(event)){
-            incrementEdits(event, editData.getTestEdits());
-        }
-        else {
-            incrementEdits(event, editData.getMainEdits());
+        if (isSourceFile(event))
+        {
+            if (isTestFile(event))
+            {
+                incrementEdits(event, editData.getTestEdits());
+            } else
+                {
+                incrementEdits(event, editData.getMainEdits());
+            }
         }
     }
 
@@ -69,6 +73,12 @@ public class TestPatternProcessor implements EventProcessor
         Integer edits = sessions.get(day);
         edits = edits == null ? 1 : edits + event.NumberOfChanges;
         sessions.put(day, edits);
+    }
+
+    boolean isSourceFile(EditEvent editEvent)
+    {
+        String fileName = editEvent.ActiveWindow.getCaption();
+        return fileName.endsWith(".cs");
     }
 
     boolean isTestFile(EditEvent editEvent)
