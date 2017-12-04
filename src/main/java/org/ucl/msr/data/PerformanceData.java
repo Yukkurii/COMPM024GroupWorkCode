@@ -44,7 +44,8 @@ public class PerformanceData {
 			int fileNum = calcFileNum(sessionID);
 			if(duration != null && fileNum != -1 && duration.toMinutes() != 0) {
 				long minutesPerFile = duration.toMinutes()/fileNum;
-				outputPerformance.put(sessionID, 1/minutesPerFile);
+				long output = minutesPerFile == 0 ? 0 : 1/minutesPerFile;
+				outputPerformance.put(sessionID, output);
 			}
 		}
 		return outputPerformance;
