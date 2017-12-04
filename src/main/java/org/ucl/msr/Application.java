@@ -43,12 +43,18 @@ public class Application
             ExecutorService executor = getExecutorService(parameters);
             EventIterator iterator = new EventIterator(archive, processor, executor);
             executor.invokeAll(Arrays.asList(iterator));
-
-//            System.out.println("Start writting to files");
+            try {
+            	executor.awaitTermination(Long.MAX_VALUE, TimeUnit.NANOSECONDS);
+            } catch (InterruptedException e) {
+            	throw new RuntimeException(e);
+            }
+            
+            System.out.println("Start writting to files");
             EditReport editReport = new EditReport(eventData);
             editReport.writeToFile(parameters.getOutputPath(), "edits.csv");
             PerformanceReport performanceReport = new PerformanceReport(eventData);
             performanceReport.writeToFile(parameters.getOutputPath(), "performance.csv");
+            System.out.println("Writting finished");
         }
         catch (Exception exception)
         {
