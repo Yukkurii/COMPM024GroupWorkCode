@@ -85,7 +85,10 @@ public class EventIterator implements Callable<EventProcessor>
     {
         ZipArchive archive = new ZipStream(element.getData());
         EventIterator iterator = new EventIterator(archive, processor, executor);
-        executor.submit(iterator);
+
+        if (!executor.isShutdown()) {
+            executor.submit(iterator);
+        }
     }
 
     private void processJson(ZipElement element)
