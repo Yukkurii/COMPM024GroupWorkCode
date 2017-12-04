@@ -67,7 +67,7 @@ public class TestPatternProcessor implements EventProcessor
     {
         ZonedDateTime day = getDay(event);
         Integer edits = sessions.get(day);
-        edits = edits == null ? 1 : edits + 1;
+        edits = edits == null ? 1 : edits + event.NumberOfChanges;
         sessions.put(day, edits);
     }
 
