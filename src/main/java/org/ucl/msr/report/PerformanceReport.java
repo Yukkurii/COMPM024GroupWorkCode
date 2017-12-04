@@ -3,13 +3,10 @@ package org.ucl.msr.report;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.time.ZonedDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.ucl.msr.data.EditData;
 import org.ucl.msr.data.EventData;
 import org.ucl.msr.data.PerformanceData;
 import org.ucl.msr.data.ProfileDetails;
@@ -75,7 +72,7 @@ public class PerformanceReport {
     private void writeToFile(FileWriter fileWriter, Map<String, Long> performance) throws IOException
     {
     	for (Map.Entry<String, Long> entry : performance.entrySet()) { 
-    		fileWriter.append(entry.getKey() + "," + entry.getValue() + "\n");
+    		fileWriter.append(entry.getKey() + "," + eventData.getProfileData().getProfileDetails(entry.getKey()).getEducation().toString() + "," + entry.getValue() + "\n");
     	}
     }
 }
