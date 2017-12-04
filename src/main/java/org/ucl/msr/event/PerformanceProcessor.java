@@ -55,7 +55,7 @@ public class PerformanceProcessor implements EventProcessor
         	WindowEvent we = (WindowEvent)event;
         	if(we.ActiveWindow.getCaption().contains(".cs")) {	//code files
             	if(we.Action.toString().equals("Create") || we.Action.toString().equals("Activate")) {
-            		System.out.println(we.Action.toString());
+            		//System.out.println(we.Action.toString());
             		addFileUsageRecord(we.IDESessionUUID, we.ActiveWindow.getCaption(), we.TriggeredAt, "active");
             	}
             	else if(we.Action.toString().equals("Close") || we.Action.toString().equals("Deactivate")) {
