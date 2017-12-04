@@ -47,8 +47,13 @@ public class EventIterator implements Callable<EventProcessor>
         {
             processArchive(archive);
         }
-        catch (CancellationException e)
+        catch (CancellationException cancellation)
         {
+            executor.shutdownNow();
+        }
+        catch (Throwable error)
+        {
+            error.printStackTrace();
             executor.shutdownNow();
         }
         return processor;
