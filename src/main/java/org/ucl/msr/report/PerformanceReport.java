@@ -65,7 +65,9 @@ public class PerformanceReport {
             		sessionNum++;
         		}
         	}
-        	result.put(profileID, userPerformance/sessionNum);
+        	if(sessionNum != 0) {
+        		result.put(profileID, userPerformance/sessionNum);
+        	}	
         }
         return result;
     }

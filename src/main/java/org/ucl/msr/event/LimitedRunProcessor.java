@@ -43,7 +43,7 @@ public class LimitedRunProcessor implements EventProcessor
     {
         if (runCount++ < runMax)
         {
-            printProgress(runCount, runMax);
+//            printProgress(runCount, runMax);
             delegate.process(event);
         }
         else

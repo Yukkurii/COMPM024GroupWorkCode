@@ -44,6 +44,7 @@ public class Application
             EventIterator iterator = new EventIterator(archive, processor, executor);
             executor.invokeAll(Arrays.asList(iterator));
 
+//            System.out.println("Start writting to files");
             EditReport editReport = new EditReport(eventData);
             editReport.writeToFile(parameters.getOutputPath(), "edits.csv");
             PerformanceReport performanceReport = new PerformanceReport(eventData);
