@@ -101,7 +101,7 @@ public class EventIterator implements Callable<EventProcessor>
             IDEEvent event = JsonUtils.fromJson(content, IDEEvent.class);
             processor.process(event);
         }
-        catch (Exception exception){
+        catch (IOException exception){
             exception.printStackTrace();
         }
     }
