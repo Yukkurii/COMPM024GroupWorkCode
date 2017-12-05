@@ -11,6 +11,7 @@ package org.ucl.msr.zip;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.Iterator;
 import java.util.zip.ZipInputStream;
 
@@ -27,7 +28,12 @@ public class ZipStream implements ZipArchive
 
     public ZipStream(byte[] archive)
     {
-        stream = new ZipInputStream(new ByteArrayInputStream(archive));
+        this(new ByteArrayInputStream(archive));
+    }
+
+    public ZipStream(InputStream inputStream)
+    {
+        stream = new ZipInputStream(inputStream);
     }
 
     @Override

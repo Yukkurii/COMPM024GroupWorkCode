@@ -11,10 +11,13 @@ package org.ucl.msr.event;
 
 import cc.kave.commons.model.events.IDEEvent;
 import cc.kave.commons.utils.io.json.JsonUtils;
+import org.apache.commons.io.IOUtils;
 import org.ucl.msr.zip.ZipArchive;
 import org.ucl.msr.zip.ZipElement;
 import org.ucl.msr.zip.ZipStream;
 
+import java.io.ByteArrayOutputStream;
+import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.concurrent.Callable;
 import java.util.concurrent.CancellationException;
@@ -54,6 +57,7 @@ public class EventIterator implements Callable<EventProcessor>
         catch (Throwable error)
         {
             error.printStackTrace();
+
             executor.shutdownNow();
         }
         return processor;
@@ -93,8 +97,28 @@ public class EventIterator implements Callable<EventProcessor>
 
     private void processJson(ZipElement element)
     {
-        String content = new String(element.getData(), StandardCharsets.UTF_8);
+        String content = getData(element);
         IDEEvent event = JsonUtils.fromJson(content, IDEEvent.class);
         processor.process(event);
+    }
+
+
+
+    //TODO: Move to utils
+    private String getData(ZipElement element)
+    {
+        try
+        {
+            InputStream in = element.getData();
+            ByteArrayOutputStream out = new ByteArrayOutputStream();
+            IOUtils.copy(in, out);
+            IOUtils.closeQuietly(in);
+            out.close();
+            return new String(out.toByteArray(), StandardCharsets.UTF_8);
+        }
+        catch (Exception e)
+        {
+            throw new RuntimeException(e); //TODO: Bad - improve
+        }
     }
 }

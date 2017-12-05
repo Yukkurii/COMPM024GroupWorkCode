@@ -9,6 +9,9 @@
 
 package org.ucl.msr.zip;
 
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
+
 /**
  * Instances of this class represent a single compressed element, a single
  * constituent of a {@link ZipArchive}. Methods are provided to obtain its
@@ -20,13 +23,20 @@ package org.ucl.msr.zip;
 public class ZipElement
 {
     private String name;
-    private byte[] data;
+    private InputStream data;
     private boolean isDirectory;
 
-    public ZipElement(String name, byte[] data, boolean isDirectory)
+    public ZipElement(String name, InputStream data, boolean isDirectory)
     {
         this.name = name;
         this.data = data;
+        this.isDirectory = isDirectory;
+    }
+    
+    public ZipElement(String name, byte[] data, boolean isDirectory)
+    {
+        this.name = name;
+        this.data = new ByteArrayInputStream(data);
         this.isDirectory = isDirectory;
     }
 
@@ -35,7 +45,7 @@ public class ZipElement
         return name;
     }
 
-    public byte[] getData()
+    public InputStream getData()
     {
         return data;
     }
