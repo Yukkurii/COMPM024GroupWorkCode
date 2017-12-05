@@ -1,6 +1,7 @@
 package org.ucl.msr.event;
 
 import cc.kave.commons.model.events.visualstudio.EditEvent;
+import cc.kave.commons.model.naming.idecomponents.IDocumentName;
 import cc.kave.commons.model.naming.idecomponents.IWindowName;
 import org.junit.Assert;
 import org.junit.Test;
@@ -71,13 +72,13 @@ public class TestPatternProcessorTest
         return localTime.atZone(ZoneId.of("Europe/London"));
     }
 
-    private EditEvent createEditEvent(String session, String window, ZonedDateTime time)
+    private EditEvent createEditEvent(String session, String fileName, ZonedDateTime time)
     {
-        IWindowName windowName = Mockito.mock(IWindowName.class);
-        Mockito.when(windowName.getCaption()).thenReturn(window);
+        IDocumentName documentName = Mockito.mock(IDocumentName.class);
+        Mockito.when(documentName.getFileName()).thenReturn(fileName);
 
         EditEvent result = Mockito.mock(EditEvent.class);
-        result.ActiveWindow = windowName;
+        result.ActiveDocument = documentName;
         result.IDESessionUUID = session;
         result.TriggeredAt = time;
 

@@ -40,10 +40,8 @@ public class TestPatternProcessor implements EventProcessor
     {
         if (event instanceof EditEvent)
         {
-        	if(event.ActiveWindow != null) {
-                EditEvent editEvent = (EditEvent)event;
-                incrementEdits(editEvent);
-        	}
+            EditEvent editEvent = (EditEvent)event;
+            incrementEdits(editEvent);
         }
     }
 
@@ -79,22 +77,12 @@ public class TestPatternProcessor implements EventProcessor
 
     boolean isSourceFile(EditEvent editEvent)
     {
-//    	if(editEvent == null) {
-//    		System.out.println("null event exist");
-//    	}
-//    	if(editEvent.ActiveWindow == null) {
-//    		System.out.println("null window event exist");
-//    	}
-//    	if(editEvent.ActiveWindow.getCaption() == null) {
-//    		System.out.println("null window name event exist");
-//    	}
-        String fileName = editEvent.ActiveWindow.getCaption();
-        return fileName.endsWith(".cs");
+        return editEvent.ActiveDocument != null;
     }
 
     boolean isTestFile(EditEvent editEvent)
     {
-        String fileName = editEvent.ActiveWindow.getCaption();
+        String fileName = editEvent.ActiveDocument.getFileName();
         return fileName.endsWith("Test.cs") || fileName.endsWith("Tests.cs");
     }
 
