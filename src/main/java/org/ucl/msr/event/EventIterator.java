@@ -94,12 +94,15 @@ public class EventIterator implements Callable<EventProcessor>
         }
     }
 
-    private void processJson(ZipElement element) throws IOException
+    private void processJson(ZipElement element)
     {
         try (InputStream data = element.getData()) {
             String content = StreamUtils.getString(data);
             IDEEvent event = JsonUtils.fromJson(content, IDEEvent.class);
             processor.process(event);
+        }
+        catch (Exception exception){
+            exception.printStackTrace();
         }
     }
 }
