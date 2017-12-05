@@ -20,4 +20,5 @@ import java.io.Closeable;
  */
 public interface ZipArchive extends Iterable<ZipElement>, Closeable
 {
+
 }

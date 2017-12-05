@@ -3,16 +3,18 @@ package org.ucl.msr.zip;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipFile;
 
 public class ZipStreamElement implements ZipElement
 {
     private String name;
-    private InputStream data;
+    private ZipStream archive;
 
-    public ZipStreamElement(String name, byte[] data)
+    public ZipStreamElement(String name, ZipStream archive)
     {
         this.name = name;
-        this.data = new ByteArrayInputStream(data);
+        this.archive = archive;
     }
 
     @Override
@@ -22,8 +24,9 @@ public class ZipStreamElement implements ZipElement
     }
 
     @Override
-    public InputStream getData()
+    public InputStream getData() throws IOException
     {
-        return data;
+        ZipEntry entry = archive.getEntry(name);
+        return archive.getInputStream(entry);
     }
 }

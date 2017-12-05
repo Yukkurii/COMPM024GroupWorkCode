@@ -17,7 +17,7 @@ public class ZipStreamTest
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         IOUtils.copy(inputStream, outputStream);
         
-        try(ZipStream zipStream = new ZipStream(outputStream.toByteArray()))
+        try(ZipStream zipStream = new ZipStream(new ByteArrayInputStream(outputStream.toByteArray())))
         {
 	        Collection<String> contents = new ArrayList<String>();
 	        for (ZipElement element: zipStream){
@@ -31,4 +31,5 @@ public class ZipStreamTest
 	        Assert.assertTrue("directory.file3.txt missing", contents.contains("directory/file3.txt"));
         }
     }
+    
 }

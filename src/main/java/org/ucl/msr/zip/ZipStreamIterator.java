@@ -25,26 +25,17 @@ import java.util.zip.ZipInputStream;
  */
 public class ZipStreamIterator implements Iterator<ZipElement>
 {
-    private ZipInputStream stream;
-    private ZipEntry next;
+    private ZipStream stream;
 
-    public ZipStreamIterator(ZipInputStream stream)
+    public ZipStreamIterator(ZipStream stream)
     {
-        try
-        {
-            this.stream = stream;
-            this.next = stream.getNextEntry();
-        }
-        catch (Exception exception)
-        {
-            throw new RuntimeException(exception); //TODO: Bad - improve
-        }
+        this.stream = stream;
     }
 
     @Override
     public boolean hasNext()
     {
-        return next != null;
+        return stream.hasNext();
     }
 
     @Override
@@ -52,35 +43,9 @@ public class ZipStreamIterator implements Iterator<ZipElement>
     {
         try
         {
-            ZipElement result = getNextElement();
-            next = stream.getNextEntry();
-            return result;
-        }
-        catch (Exception exception)
-        {
-            throw new RuntimeException(exception); //TODO: Bad - improve
-        }
-    }
-
-    private ZipElement getNextElement()
-    {
-        String name = next.getName();
-        byte[] data = getData(next);
-        return new ZipStreamElement(name, data);
-    }
-
-    private byte[] getData(ZipEntry entry)
-    {
-        try
-        {
-            if (!entry.isDirectory())
-            {
-                ByteArrayOutputStream byteStream = new ByteArrayOutputStream();
-                IOUtils.copy(stream, byteStream);
-                byteStream.close();
-                return byteStream.toByteArray();
-            }
-            return new byte[0];
+            ZipEntry next = stream.getNextEntry();
+            String name = next.getName();
+            return new ZipStreamElement(name, stream);
         }
         catch (Exception exception)
         {

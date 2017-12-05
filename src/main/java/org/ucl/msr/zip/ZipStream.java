@@ -12,7 +12,9 @@ package org.ucl.msr.zip;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
 import java.util.Iterator;
+import java.util.Objects;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
@@ -25,23 +27,21 @@ import java.util.zip.ZipInputStream;
  */
 public class ZipStream implements ZipArchive
 {
+    private ZipEntry current;
+    private ZipEntry next;
     private ZipInputStream stream;
 
-    @Deprecated
-    public ZipStream(byte[] archive)
-    {
-        this(new ByteArrayInputStream(archive));
-    }
-
-    public ZipStream(InputStream inputStream)
+    public ZipStream(InputStream inputStream) throws IOException
     {
         stream = new ZipInputStream(inputStream);
+        current = null;
+        next = stream.getNextEntry();
     }
 
     @Override
     public Iterator<ZipElement> iterator()
     {
-        return new ZipStreamIterator(stream);
+        return new ZipStreamIterator(this);
     }
 
     @Override
@@ -49,4 +49,36 @@ public class ZipStream implements ZipArchive
     {
         stream.close();
     }
+
+    public boolean hasNext()
+    {
+        return next != null;
+    }
+
+    public ZipEntry getNextEntry() throws IOException
+    {
+        current = next;
+        next = stream.getNextEntry();
+        return current;
+    }
+
+    public ZipEntry getEntry(String name) throws IOException
+    {
+        if (Objects.equals(current.getName(), name))
+        {
+            return current;
+        }
+        throw new UnsupportedOperationException();
+    }
+
+    public InputStream getInputStream(ZipEntry entry) throws IOException
+    {
+        if (Objects.equals(current, entry))
+        {
+            return new ZipStreamSegment(stream);
+        }
+        throw new UnsupportedOperationException();
+    }
+
+
 }

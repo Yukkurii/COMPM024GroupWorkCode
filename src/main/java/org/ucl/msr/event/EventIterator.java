@@ -65,7 +65,7 @@ public class EventIterator implements Callable<EventProcessor>
         return processor;
     }
 
-    private void processArchive(ZipArchive archive) throws IOException //TODO: Remove
+    private void processArchive(ZipArchive archive) throws IOException
     {
         for (ZipElement element : archive)
         {
@@ -73,7 +73,7 @@ public class EventIterator implements Callable<EventProcessor>
         }
     }
 
-    private void processAchieveElement(ZipElement element) throws IOException //TODO: Remove
+    private void processAchieveElement(ZipElement element) throws IOException
     {
         String elementName = element.getName();
 
@@ -87,7 +87,7 @@ public class EventIterator implements Callable<EventProcessor>
         }
     }
 
-    private void processArchive(ZipElement element) throws IOException //TODO: Remove
+    private void processArchive(ZipElement element) throws IOException
     {
         ZipArchive archive = new ZipStream(element.getData());
         EventIterator iterator = new EventIterator(archive, processor, executor);
@@ -97,15 +97,12 @@ public class EventIterator implements Callable<EventProcessor>
         }
     }
 
-    private void processJson(ZipElement element)
+    private void processJson(ZipElement element) throws IOException
     {
         try (InputStream data = element.getData()) {
             String content = StreamUtils.getString(data);
             IDEEvent event = JsonUtils.fromJson(content, IDEEvent.class);
             processor.process(event);
-        }
-        catch (IOException exception){
-            throw new RuntimeException(exception); //TODO: Bad - improve
         }
     }
 }
