@@ -7,10 +7,11 @@
  *      http://creativecommons.org/licenses/by/4.0/
  */
 
-package org.ucl.msr.zip;
+package org.ucl.msr.utils.zip;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.zip.ZipEntry;
 
 /**
  * Instances of this class represent a single compressed element, a single
@@ -20,32 +21,15 @@ import java.io.InputStream;
  * @author Blair Butterworth
  * @author Chenghui Fan
  */
-public interface ZipElement
-{
-    String getName();
-
-    InputStream getData() throws IOException;
-}
-
-/*s
 public class ZipElement
 {
     private String name;
-    private InputStream data;
-    private boolean isDirectory;
+    private ZipArchive archive;
 
-    public ZipElement(String name, InputStream data, boolean isDirectory)
+    public ZipElement(String name, ZipArchive archive)
     {
         this.name = name;
-        this.data = data;
-        this.isDirectory = isDirectory;
-    }
-
-    public ZipElement(String name, byte[] data, boolean isDirectory)
-    {
-        this.name = name;
-        this.data = new ByteArrayInputStream(data);
-        this.isDirectory = isDirectory;
+        this.archive = archive;
     }
 
     public String getName()
@@ -53,14 +37,9 @@ public class ZipElement
         return name;
     }
 
-    public InputStream getData()
+    public InputStream getData() throws IOException
     {
-        return data;
-    }
-
-    public boolean isDirectory()
-    {
-        return isDirectory;
+        ZipEntry entry = archive.getEntry(name);
+        return archive.getInputStream(entry);
     }
 }
-*/

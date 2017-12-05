@@ -1,4 +1,4 @@
-package org.ucl.msr.utils;
+package org.ucl.msr.utils.stream;
 
 import org.apache.commons.io.IOUtils;
 

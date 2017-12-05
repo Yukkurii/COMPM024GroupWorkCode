@@ -7,19 +7,17 @@
  *      http://creativecommons.org/licenses/by/4.0/
  */
 
-package org.ucl.msr.zip;
+package org.ucl.msr.utils.zip;
 
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.UnsupportedEncodingException;
 import java.util.Iterator;
 import java.util.Objects;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
 /**
- * Instances of this class represent a stream whose contents are compressed
+ * Instances of this class represent a delegate whose contents are compressed
  * using the ZIP format. Methods are provide to iterate through its contents.
  *
  * @author Blair Butterworth
@@ -41,7 +39,7 @@ public class ZipStream implements ZipArchive
     @Override
     public Iterator<ZipElement> iterator()
     {
-        return new ZipStreamIterator(this);
+        return new ZipIterator(this);
     }
 
     @Override
@@ -50,11 +48,13 @@ public class ZipStream implements ZipArchive
         stream.close();
     }
 
+    @Override
     public boolean hasNext()
     {
         return next != null;
     }
 
+    @Override
     public ZipEntry getNextEntry() throws IOException
     {
         current = next;
@@ -62,10 +62,10 @@ public class ZipStream implements ZipArchive
         return current;
     }
 
+    @Override
     public ZipEntry getEntry(String name) throws IOException
     {
-        if (Objects.equals(current.getName(), name))
-        {
+        if (Objects.equals(current.getName(), name)) {
             return current;
         }
         throw new UnsupportedOperationException();
@@ -73,12 +73,9 @@ public class ZipStream implements ZipArchive
 
     public InputStream getInputStream(ZipEntry entry) throws IOException
     {
-        if (Objects.equals(current, entry))
-        {
+        if (Objects.equals(current, entry)) {
             return new ZipStreamSegment(stream);
         }
         throw new UnsupportedOperationException();
     }
-
-
 }

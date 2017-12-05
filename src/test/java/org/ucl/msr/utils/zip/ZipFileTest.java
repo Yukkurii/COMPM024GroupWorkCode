@@ -1,4 +1,4 @@
-package org.ucl.msr.zip;
+package org.ucl.msr.utils.zip;
 
 import org.junit.Assert;
 import org.junit.Test;

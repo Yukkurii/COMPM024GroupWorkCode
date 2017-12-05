@@ -7,45 +7,43 @@
  *      http://creativecommons.org/licenses/by/4.0/
  */
 
-package org.ucl.msr.zip;
+package org.ucl.msr.utils.zip;
 
-import org.apache.commons.io.IOUtils;
-
-import java.io.ByteArrayOutputStream;
-import java.io.InputStream;
-import java.util.Enumeration;
+import java.io.IOException;
 import java.util.Iterator;
 import java.util.zip.ZipEntry;
-import java.util.zip.ZipFile;
 
 /**
  * Instances of this class implement the {@link Iterator} interface, iterating
- * through the contents of a {@link ZipFile}.
+ * through the contents of a {@link ZipArchive}.
  *
  * @author Blair Butterworth
  * @author Chenghui Fan
  */
-public class ZipFileIterator implements Iterator<ZipElement>
+public class ZipIterator implements Iterator<ZipElement>
 {
-    private ZipFile archive;
-    private Enumeration<? extends ZipEntry> entries;
+    private ZipArchive archive;
 
-    public ZipFileIterator(ZipFile archive)
+    public ZipIterator(ZipArchive archive)
     {
         this.archive = archive;
-        this.entries = archive.entries();
     }
 
     @Override
     public boolean hasNext()
     {
-        return entries.hasMoreElements();
+        return archive.hasNext();
     }
 
     @Override
     public ZipElement next()
     {
-        ZipEntry entry = entries.nextElement();
-        return new ZipFileElement(entry.getName(), archive);
+        try {
+            ZipEntry entry = archive.getNextEntry();
+            return new ZipElement(entry.getName(), archive);
+        }
+        catch (IOException e){
+            throw new RuntimeException(e); //TODO
+        }
     }
 }

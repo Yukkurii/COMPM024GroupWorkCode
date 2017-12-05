@@ -11,16 +11,13 @@ package org.ucl.msr.event;
 
 import cc.kave.commons.model.events.IDEEvent;
 import cc.kave.commons.utils.io.json.JsonUtils;
-import org.apache.commons.io.IOUtils;
-import org.ucl.msr.utils.StreamUtils;
-import org.ucl.msr.zip.ZipArchive;
-import org.ucl.msr.zip.ZipElement;
-import org.ucl.msr.zip.ZipStream;
+import org.ucl.msr.utils.stream.StreamUtils;
+import org.ucl.msr.utils.zip.ZipArchive;
+import org.ucl.msr.utils.zip.ZipElement;
+import org.ucl.msr.utils.zip.ZipStream;
 
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.charset.StandardCharsets;
 import java.util.concurrent.Callable;
 import java.util.concurrent.CancellationException;
 import java.util.concurrent.ExecutorService;

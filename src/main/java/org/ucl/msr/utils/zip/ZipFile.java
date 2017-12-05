@@ -7,11 +7,14 @@
  *      http://creativecommons.org/licenses/by/4.0/
  */
 
-package org.ucl.msr.zip;
+package org.ucl.msr.utils.zip;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
+import java.util.Enumeration;
 import java.util.Iterator;
+import java.util.zip.ZipEntry;
 
 /**
  * Instances of this class represent a file compressed using the ZIP format.
@@ -23,16 +26,18 @@ import java.util.Iterator;
 public class ZipFile implements ZipArchive
 {
     private java.util.zip.ZipFile archive;
+    private Enumeration<? extends ZipEntry> entries;
 
     public ZipFile(File file)
     {
         try
         {
-            archive = new java.util.zip.ZipFile(file);
+            this.archive = new java.util.zip.ZipFile(file);
+            this.entries = archive.entries();
         }
-        catch (Exception e)
+        catch (IOException e)
         {
-            throw new RuntimeException(e); //TODO: Bad - improve
+            throw new RuntimeException(e); //TODO
         }
     }
 
@@ -44,7 +49,7 @@ public class ZipFile implements ZipArchive
     @Override
     public Iterator<ZipElement> iterator()
     {
-        return new ZipFileIterator(archive);
+        return new ZipIterator(this);
     }
 
     @Override
@@ -53,5 +58,27 @@ public class ZipFile implements ZipArchive
         archive.close();
     }
 
+    @Override
+    public boolean hasNext()
+    {
+        return entries.hasMoreElements();
+    }
 
+    @Override
+    public ZipEntry getNextEntry()
+    {
+        return entries.nextElement();
+    }
+
+    @Override
+    public ZipEntry getEntry(String name) throws IOException
+    {
+        return archive.getEntry(name);
+    }
+
+    @Override
+    public InputStream getInputStream(ZipEntry entry) throws IOException
+    {
+        return archive.getInputStream(entry);
+    }
 }
