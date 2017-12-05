@@ -46,44 +46,6 @@ public class ZipFileIterator implements Iterator<ZipElement>
     public ZipElement next()
     {
         ZipEntry entry = entries.nextElement();
-        String name = entry.getName();
-        //byte[] data = getData(entry);
-        InputStream data = getData(entry);
-        boolean isDirectory = entry.isDirectory();
-        return new ZipElement(name, data, isDirectory);
+        return new ZipFileElement(entry.getName(), archive);
     }
-
-    private InputStream getData(ZipEntry entry)
-    {
-        try
-        {
-            return archive.getInputStream(entry);
-        }
-        catch (Exception e)
-        {
-            throw new RuntimeException(e); //TODO: Bad - improve
-        }
-    }
-    /*
-    private byte[] getData(ZipEntry entry)
-    {
-        try
-        {
-            if (!entry.isDirectory())
-            {
-                InputStream in = archive.getInputStream(entry);
-                ByteArrayOutputStream out = new ByteArrayOutputStream();
-                IOUtils.copy(in, out);
-                IOUtils.closeQuietly(in);
-                out.close();
-                return out.toByteArray();
-            }
-            return new byte[0];
-        }
-        catch (Exception e)
-        {
-            throw new RuntimeException(e); //TODO: Bad - improve
-        }
-    }
-    */
 }

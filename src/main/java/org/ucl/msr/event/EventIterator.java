@@ -12,11 +12,13 @@ package org.ucl.msr.event;
 import cc.kave.commons.model.events.IDEEvent;
 import cc.kave.commons.utils.io.json.JsonUtils;
 import org.apache.commons.io.IOUtils;
+import org.ucl.msr.utils.StreamUtils;
 import org.ucl.msr.zip.ZipArchive;
 import org.ucl.msr.zip.ZipElement;
 import org.ucl.msr.zip.ZipStream;
 
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.concurrent.Callable;
@@ -63,7 +65,7 @@ public class EventIterator implements Callable<EventProcessor>
         return processor;
     }
 
-    private void processArchive(ZipArchive archive)
+    private void processArchive(ZipArchive archive) throws IOException //TODO: Remove
     {
         for (ZipElement element : archive)
         {
@@ -71,7 +73,7 @@ public class EventIterator implements Callable<EventProcessor>
         }
     }
 
-    private void processAchieveElement(ZipElement element)
+    private void processAchieveElement(ZipElement element) throws IOException //TODO: Remove
     {
         String elementName = element.getName();
 
@@ -85,40 +87,25 @@ public class EventIterator implements Callable<EventProcessor>
         }
     }
 
-    private void processArchive(ZipElement element)
+    private void processArchive(ZipElement element) throws IOException //TODO: Remove
     {
         ZipArchive archive = new ZipStream(element.getData());
         EventIterator iterator = new EventIterator(archive, processor, executor);
 
         if (!executor.isShutdown()) {
-            executor.submit(iterator);
+            executor.submit(iterator); //TODO close archive
         }
     }
 
     private void processJson(ZipElement element)
     {
-        String content = getData(element);
-        IDEEvent event = JsonUtils.fromJson(content, IDEEvent.class);
-        processor.process(event);
-    }
-
-
-
-    //TODO: Move to utils
-    private String getData(ZipElement element)
-    {
-        try
-        {
-            InputStream in = element.getData();
-            ByteArrayOutputStream out = new ByteArrayOutputStream();
-            IOUtils.copy(in, out);
-            IOUtils.closeQuietly(in);
-            out.close();
-            return new String(out.toByteArray(), StandardCharsets.UTF_8);
+        try (InputStream data = element.getData()) {
+            String content = StreamUtils.getString(data);
+            IDEEvent event = JsonUtils.fromJson(content, IDEEvent.class);
+            processor.process(event);
         }
-        catch (Exception e)
-        {
-            throw new RuntimeException(e); //TODO: Bad - improve
+        catch (IOException exception){
+            throw new RuntimeException(exception); //TODO: Bad - improve
         }
     }
 }

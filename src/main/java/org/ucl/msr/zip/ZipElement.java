@@ -9,7 +9,7 @@
 
 package org.ucl.msr.zip;
 
-import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.io.InputStream;
 
 /**
@@ -20,6 +20,14 @@ import java.io.InputStream;
  * @author Blair Butterworth
  * @author Chenghui Fan
  */
+public interface ZipElement
+{
+    String getName();
+
+    InputStream getData() throws IOException;
+}
+
+/*s
 public class ZipElement
 {
     private String name;
@@ -32,7 +40,7 @@ public class ZipElement
         this.data = data;
         this.isDirectory = isDirectory;
     }
-    
+
     public ZipElement(String name, byte[] data, boolean isDirectory)
     {
         this.name = name;
@@ -55,3 +63,4 @@ public class ZipElement
         return isDirectory;
     }
 }
+*/

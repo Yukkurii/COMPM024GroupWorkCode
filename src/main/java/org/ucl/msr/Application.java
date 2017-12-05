@@ -38,7 +38,7 @@ public class Application
             ApplicationParameters parameters = new ApplicationParameters(arguments);
             EventData eventData = new EventData();
             EventProcessor processor = getEventProcessor(parameters, eventData);
-            ZipArchive archive = new ZipFile(parameters.getDataPath());
+            ZipArchive archive = new ZipFile(parameters.getDataPath()); //TODO - close when done
 
             ExecutorService executor = getExecutorService(parameters);
             EventIterator iterator = new EventIterator(archive, processor, executor);

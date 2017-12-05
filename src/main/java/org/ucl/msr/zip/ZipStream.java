@@ -13,6 +13,7 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Iterator;
+import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
 /**
@@ -26,6 +27,7 @@ public class ZipStream implements ZipArchive
 {
     private ZipInputStream stream;
 
+    @Deprecated
     public ZipStream(byte[] archive)
     {
         this(new ByteArrayInputStream(archive));

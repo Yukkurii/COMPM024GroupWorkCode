@@ -66,8 +66,7 @@ public class ZipStreamIterator implements Iterator<ZipElement>
     {
         String name = next.getName();
         byte[] data = getData(next);
-        boolean isDirectory = next.isDirectory();
-        return new ZipElement(name, data, isDirectory);
+        return new ZipStreamElement(name, data);
     }
 
     private byte[] getData(ZipEntry entry)
