@@ -78,7 +78,7 @@ public class Application
         EventIterator iterator = new EventIterator(archive, processor, executor);
 
         executor.invokeAll(Arrays.asList(iterator));
-        executor.awaitTermination(Long.MAX_VALUE, TimeUnit.NANOSECONDS);
+        executor.awaitTermination(1, TimeUnit.HOURS);
     }
 
     private static void writeReports(ApplicationParameters parameters, EventData eventData) throws IOException
