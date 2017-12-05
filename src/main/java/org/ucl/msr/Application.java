@@ -13,6 +13,7 @@ import org.ucl.msr.data.EventData;
 import org.ucl.msr.event.*;
 import org.ucl.msr.report.EditReport;
 import org.ucl.msr.report.PerformanceReport;
+import org.ucl.msr.report.ProfileReport;
 import org.ucl.msr.utils.zip.ZipArchive;
 import org.ucl.msr.utils.zip.ZipFile;
 
@@ -87,5 +88,8 @@ public class Application
 
         PerformanceReport performanceReport = new PerformanceReport(eventData);
         performanceReport.writeToFile(parameters.getOutputPath(), "performance.csv");
+
+        ProfileReport profileReport = new ProfileReport(eventData);
+        profileReport.writeToFile(parameters.getOutputPath(), "profiles.csv");
     }
 }

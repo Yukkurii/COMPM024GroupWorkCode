@@ -21,10 +21,8 @@ import java.time.temporal.ChronoUnit;
 import java.util.*;
 
 /**
- * Instances of this class write the edit data gathered by iterating through
+ * Instances of this class write user edit data gathered by iterating through
  * the MSR data set to file in CSV format.
- *
- * REMOVE ME
  *
  * @author Blair Butterworth
  * @author Chenghui Fan
