@@ -34,8 +34,8 @@ public class PerformanceData {
 	}
 	
 	//return <sessionID, performance>
-	public Map<String, Long> getPerformanceAsLong(){
-		Map<String, Long> outputPerformance = new HashMap<String, Long>();
+	public Map<String, ArrayList<Long>> getPerformanceAsLong(){
+		Map<String, ArrayList<Long>> outputPerformance = new HashMap<String, ArrayList<Long>>();
 		Iterator<String> i = performance.keySet().iterator();
 //		System.out.println("performancesize:" + performance.size());
 		while(i.hasNext()) {
@@ -43,8 +43,12 @@ public class PerformanceData {
 			Duration duration = calcDuration(sessionID);
 			int fileNum = calcFileNum(sessionID);
 			if(duration != null && fileNum != -1 && duration.toMinutes() != 0) {
+				ArrayList<Long> performanceInfo = new ArrayList<Long>();
 				long minutesPerFile = duration.toMinutes()/fileNum;
-				outputPerformance.put(sessionID, minutesPerFile);
+				performanceInfo.add(duration.toMinutes());
+				performanceInfo.add((long)fileNum);
+				performanceInfo.add(minutesPerFile);
+				outputPerformance.put(sessionID, performanceInfo);
 			}
 		}
 		return outputPerformance;

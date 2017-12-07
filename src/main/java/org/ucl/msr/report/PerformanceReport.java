@@ -3,6 +3,7 @@ package org.ucl.msr.report;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -41,38 +42,48 @@ public class PerformanceReport {
     {
         PerformanceData performanceData = eventData.getPerformanceData();
 
-        Map<String, Long> sessionPerformance = performanceData.getPerformanceAsLong();
-        Map<String, Long> userPerformance = convertSessionsToProfiles(sessionPerformance);
+        Map<String, ArrayList<Long>> sessionPerformance = performanceData.getPerformanceAsLong();
+        Map<String, ArrayList<Long>> userPerformance = convertSessionsToProfiles(sessionPerformance);
 
         writeToFile(fileWriter, userPerformance);
     }
 
-    private Map<String, Long> convertSessionsToProfiles(Map<String, Long> sessionPerformance)
+    private Map<String, ArrayList<Long>> convertSessionsToProfiles(Map<String, ArrayList<Long>> sessionPerformance)
     {
-        Map<String, Long> result = new HashMap<>();
+    	Map<String, ArrayList<Long>> result = new HashMap<>();
         Map<String, ProfileDetails> profiles = eventData.getProfileData().getProfiles();
         
         for(String profileID : profiles.keySet()) {
         	int sessionNum = 0;
         	long userPerformance = 0;
+        	long fileNum = 0;
+        	long duration = 0;
         	Collection<String> sessionIDs = profiles.get(profileID).getSessions();
         	for(String sessionID : sessionIDs) {
         		if(sessionPerformance.get(sessionID)!= null) {
-        			userPerformance = userPerformance + sessionPerformance.get(sessionID);
+        			duration = duration + sessionPerformance.get(sessionID).get(0);
+        			fileNum = fileNum + sessionPerformance.get(sessionID).get(1);
+        			userPerformance = userPerformance + sessionPerformance.get(sessionID).get(2);
             		sessionNum++;
         		}
         	}
         	if(sessionNum != 0) {
-        		result.put(profileID, userPerformance/sessionNum);
+        		ArrayList<Long> performance = new ArrayList<Long>();
+        		performance.add((long)sessionNum);		//sessionNum
+        		performance.add(duration/sessionNum);	//duration per session
+        		performance.add(fileNum/sessionNum);	//fileNum per session
+        		performance.add(userPerformance/sessionNum);	//avg duration per file
+        		result.put(profileID, performance);
         	}	
         }
         return result;
     }
 
-    private void writeToFile(FileWriter fileWriter, Map<String, Long> performance) throws IOException
+    private void writeToFile(FileWriter fileWriter, Map<String, ArrayList<Long>> performance) throws IOException
     {
-    	for (Map.Entry<String, Long> entry : performance.entrySet()) { 
-    		fileWriter.append(entry.getKey() + "," + eventData.getProfileData().getProfileDetails(entry.getKey()).getEducation().toString() + "," + entry.getValue() + "\n");
+    	fileWriter.append("profileID,Number of days,AVG duration per day,AVG number of file per day,AVG duration per file");
+    	for (Map.Entry<String, ArrayList<Long>> entry : performance.entrySet()) { 
+    		fileWriter.append(entry.getKey() + "," + eventData.getProfileData().getProfileDetails(entry.getKey()).getEducation().toString() + "," + entry.getValue().get(0) + "," + entry.getValue().get(1) + "," + entry.getValue().get(2) + "," + entry.getValue().get(3) + "\n");
     	}
     }
 }
