@@ -77,8 +77,8 @@ public class Application
         ExecutorService executor = getExecutorService(parameters);
         EventIterator iterator = new EventIterator(archive, processor, executor);
 
-        executor.invokeAll(Arrays.asList(iterator));
-        executor.awaitTermination(1, TimeUnit.HOURS);
+        executor.invokeAll(Arrays.asList(iterator), 2, TimeUnit.HOURS);
+        executor.awaitTermination(2, TimeUnit.HOURS);
     }
 
     private static void writeReports(ApplicationParameters parameters, EventData eventData) throws IOException

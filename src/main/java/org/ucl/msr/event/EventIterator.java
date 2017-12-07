@@ -45,24 +45,19 @@ public class EventIterator implements Callable<EventProcessor>
     @Override
     public EventProcessor call()
     {
-        try
-        {
+        try {
             processArchive(archive);
         }
-        catch (CancellationException cancellation)
-        {
+        catch (CancellationException cancellation) {
             executor.shutdownNow();
         }
-        catch (Throwable error)
-        {
+        catch (Throwable error){
             error.printStackTrace();
-
-            executor.shutdownNow();
         }
         return processor;
     }
 
-    private void processArchive(ZipArchive archive) throws IOException
+    private void processArchive(ZipArchive archive)
     {
         for (ZipElement element : archive)
         {
@@ -70,7 +65,7 @@ public class EventIterator implements Callable<EventProcessor>
         }
     }
 
-    private void processAchieveElement(ZipElement element) throws IOException
+    private void processAchieveElement(ZipElement element)
     {
         String elementName = element.getName();
 
@@ -84,13 +79,18 @@ public class EventIterator implements Callable<EventProcessor>
         }
     }
 
-    private void processArchive(ZipElement element) throws IOException
+    private void processArchive(ZipElement element)
     {
-        ZipArchive archive = new ZipStream(element.getData());
-        EventIterator iterator = new EventIterator(archive, processor, executor);
+        try {
+            ZipArchive archive = new ZipStream(element.getData());
+            EventIterator iterator = new EventIterator(archive, processor, executor);
 
-        if (!executor.isShutdown()) {
-            executor.submit(iterator); //TODO close archive
+            if (!executor.isShutdown()) {
+                executor.submit(iterator); //TODO close archive
+            }
+        }
+        catch (Exception error){
+            error.printStackTrace();
         }
     }
 
@@ -101,8 +101,11 @@ public class EventIterator implements Callable<EventProcessor>
             IDEEvent event = JsonUtils.fromJson(content, IDEEvent.class);
             processor.process(event);
         }
-        catch (IOException exception){
-            exception.printStackTrace();
+        catch (CancellationException cancellation){
+            throw cancellation;
+        }
+        catch (Exception error){
+            error.printStackTrace();
         }
     }
 }
