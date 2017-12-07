@@ -29,6 +29,10 @@ public class LimitedRunProcessor implements EventProcessor
 {
     private long runMax;
     private long runCount;
+
+    private long skipCounter;
+    private long skipMax;
+
     private EventProcessor delegate;
 
     public LimitedRunProcessor(EventProcessor delegate, long runMax)
@@ -36,6 +40,8 @@ public class LimitedRunProcessor implements EventProcessor
         this.runCount = 0;
         this.runMax = runMax;
         this.delegate = delegate;
+        this.skipMax = Math.min(runMax / 1000, 1000);
+        this.skipCounter = skipMax-1;
     }
 
     @Override
@@ -43,7 +49,7 @@ public class LimitedRunProcessor implements EventProcessor
     {
         if (runCount++ < runMax)
         {
-//            printProgress(runCount, runMax);
+            printProgress(runCount, runMax);
             delegate.process(event);
         }
         else
@@ -55,6 +61,9 @@ public class LimitedRunProcessor implements EventProcessor
 
     private void printProgress(long current, long total)
     {
+        if (++skipCounter <= skipMax) return;
+        skipCounter = 0;
+
         int percent = (int)(current * 100.0 / total);
 
         StringBuilder result = new StringBuilder(140);

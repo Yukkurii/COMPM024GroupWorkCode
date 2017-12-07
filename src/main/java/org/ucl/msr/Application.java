@@ -13,9 +13,11 @@ import org.ucl.msr.data.EventData;
 import org.ucl.msr.event.*;
 import org.ucl.msr.report.EditReport;
 import org.ucl.msr.report.PerformanceReport;
+import org.ucl.msr.report.ProfileReport;
 import org.ucl.msr.utils.zip.ZipArchive;
 import org.ucl.msr.utils.zip.ZipFile;
 
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.concurrent.*;
 
@@ -38,23 +40,12 @@ public class Application
             ApplicationParameters parameters = new ApplicationParameters(arguments);
             EventData eventData = new EventData();
             EventProcessor processor = getEventProcessor(parameters, eventData);
-            ZipArchive archive = new ZipFile(parameters.getDataPath()); //TODO - close when done
 
-            ExecutorService executor = getExecutorService(parameters);
-            EventIterator iterator = new EventIterator(archive, processor, executor);
-            executor.invokeAll(Arrays.asList(iterator));
-            try {
-            	executor.awaitTermination(Long.MAX_VALUE, TimeUnit.NANOSECONDS);
-            } catch (InterruptedException e) {
-            	throw new RuntimeException(e);
+            try (ZipArchive archive = new ZipFile(parameters.getDataPath())){
+                processData(parameters, archive, processor);
             }
-            
-            System.out.println("Start writting to files");
-            EditReport editReport = new EditReport(eventData);
-            editReport.writeToFile(parameters.getOutputPath(), "edits.csv");
-            PerformanceReport performanceReport = new PerformanceReport(eventData);
-            performanceReport.writeToFile(parameters.getOutputPath(), "performance.csv");
-            System.out.println("Writting finished");
+            writeReports(parameters, eventData);
+
         }
         catch (Exception exception)
         {
@@ -79,5 +70,26 @@ public class Application
     {
         int threadMax = parameters.hasThreadMax() ? parameters.getThreadMax() : DEFAULT_THREAD_MAX;
         return Executors.newFixedThreadPool(threadMax);
+    }
+
+    private static void processData(ApplicationParameters parameters, ZipArchive archive, EventProcessor processor) throws InterruptedException
+    {
+        ExecutorService executor = getExecutorService(parameters);
+        EventIterator iterator = new EventIterator(archive, processor, executor);
+
+        executor.invokeAll(Arrays.asList(iterator), 2, TimeUnit.HOURS);
+        executor.awaitTermination(2, TimeUnit.HOURS);
+    }
+
+    private static void writeReports(ApplicationParameters parameters, EventData eventData) throws IOException
+    {
+        EditReport editReport = new EditReport(eventData);
+        editReport.writeToFile(parameters.getOutputPath(), "edits.csv");
+
+        PerformanceReport performanceReport = new PerformanceReport(eventData);
+        performanceReport.writeToFile(parameters.getOutputPath(), "performance.csv");
+
+        ProfileReport profileReport = new ProfileReport(eventData);
+        profileReport.writeToFile(parameters.getOutputPath(), "profiles.csv");
     }
 }
