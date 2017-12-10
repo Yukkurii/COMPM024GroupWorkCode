@@ -43,7 +43,7 @@ public class ZipIterator implements Iterator<ZipElement>
             return new ZipElement(entry.getName(), archive);
         }
         catch (IOException e){
-            throw new RuntimeException(e); //TODO
+            throw new ZipArchiveException(e);
         }
     }
 }

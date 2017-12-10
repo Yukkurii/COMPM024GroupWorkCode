@@ -30,14 +30,12 @@ public class ZipFile implements ZipArchive
 
     public ZipFile(File file)
     {
-        try
-        {
+        try{
             this.archive = new java.util.zip.ZipFile(file);
             this.entries = archive.entries();
         }
-        catch (IOException e)
-        {
-            throw new RuntimeException(e); //TODO
+        catch (IOException e){
+            throw new ZipArchiveException(e);
         }
     }
 
