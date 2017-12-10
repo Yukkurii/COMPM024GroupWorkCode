@@ -46,5 +46,8 @@ sourceSets {
 mainClassName = "org.ucl.msr.Application"
 
 run {
-    args = ["--data", System.getProperty("data", ""), "--output", System.getProperty("output", "")]
+    args = ["--data", System.getProperty("data", ""),
+            "--output", System.getProperty("output", ""),
+            "--thread-max", System.getProperty("threadMax", "4"),
+            "--event-max", System.getProperty("eventMax", "10000")]
 }

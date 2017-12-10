@@ -10,8 +10,14 @@ execute the following command. Note: to run a script on OSX and linux you need
 to start the command with "./".
 
 ```
-gradlew run -Ddata="DATA_ZIP_PATH" --Doutput "REPORT_OUTPUT_PATH"
+gradlew run -Ddata="PATH" -Doutput="PATH" -DeventMax=1000 (Optional) -DthreadMax=4 (Optional)
 ```
+
+Options:
+- `data`: the path of an MSR zip archive.
+- `output`: the path into which the applications analysis will be written.
+- `eventMax`: the total number of MSR events to process.
+- `threadMax`: the total number of threads used to process MSR events.
 
 ## How to Develop
 
