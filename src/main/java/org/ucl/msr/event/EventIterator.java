@@ -16,7 +16,6 @@ import org.ucl.msr.utils.zip.ZipArchive;
 import org.ucl.msr.utils.zip.ZipElement;
 import org.ucl.msr.utils.zip.ZipStream;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.util.concurrent.Callable;
 import java.util.concurrent.CancellationException;

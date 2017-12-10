@@ -45,7 +45,6 @@ public class Application
                 processData(parameters, archive, processor);
             }
             writeReports(parameters, eventData);
-
         }
         catch (Exception exception)
         {
